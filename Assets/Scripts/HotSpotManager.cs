@@ -38,6 +38,11 @@ public class HotSpotManager : MonoBehaviour
     }
 
 
+    public bool IsReady()
+    {
+        return GoalMaster != null;
+    }
+
 
     public GameObject getRandomHotSpot()
     {
@@ -52,11 +57,12 @@ public class HotSpotManager : MonoBehaviour
     public void AddHotSpot(string hotspotID, int numOfSpots)
     {
         HotspotAvailability.AddResource(hotspotID, numOfSpots);
-
-        if(!HasOneHostspot)
+        
+        if (!HasOneHostspot)
         {
             HasOneHostspot = true;
-            GoalMaster.SetSpawnPointsFlagOn(); 
+            GoalMaster.SetSpawnPointsFlagOn();
+            
         }
 
     }

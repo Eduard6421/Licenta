@@ -43,7 +43,7 @@ public class EntitySpawner : MonoBehaviour
         
        AgentPrefab = Resources.Load("RobotPrefab", typeof(GameObject)) as GameObject;
 
-        BehaviourMaster = GameObject.Find("BehaviourMaster").GetComponent<GoalManager>();
+        BehaviourMaster = GoalManager.GetInstance();
 
         Agents = new List<GameObject>();
 

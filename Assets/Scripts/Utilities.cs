@@ -16,7 +16,7 @@ public static class Utilities
     {
         return (value - left) * (toRight - toLeft) / (right - left) + toLeft;
     }
-        
+
 
     //Get a random small binomial
     public static float randomBinomial()
@@ -48,12 +48,23 @@ public static class Utilities
 
     }
 
+    public static Vector3 ClipVector(Vector3 inputVector, float maxValue)
+    {
+        if(inputVector.magnitude > maxValue)
+        {
+            inputVector.Normalize();
+            inputVector *= maxValue;
+        }
+        return inputVector;
+    }
+
+
 
     public class RandomizedResourceArray
     {
         private SortedList<string, int> AvailableResources;
         private HashSet<string> UnavailableResources;
-        
+
         public RandomizedResourceArray()
         {
             AvailableResources = new SortedList<string, int>();
@@ -62,7 +73,7 @@ public static class Utilities
 
         public void AddResource(string key, int value)
         {
-            if(AvailableResources.TryGetValue(key,out int currentCount))
+            if (AvailableResources.TryGetValue(key, out int currentCount))
             {
                 throw new System.Exception("Resource already exists");
             }
@@ -121,11 +132,15 @@ public static class Utilities
         {
             int randomElement = Random.Range(0, AvailableResources.Count - 1);
 
-            string ResourceName = AvailableResources.Keys[randomElement];
 
-            DecreaseResource(ResourceName);
-
-            return ResourceName;
+            if (AvailableResources.Count != 0)
+            {
+                string ResourceName = AvailableResources.Keys[randomElement];
+                DecreaseResource(ResourceName);
+                return ResourceName;
+            }
+            else
+                return "";
         }
 
 

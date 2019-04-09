@@ -1656,8 +1656,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5462944100721786800}
   - component: {fileID: 5462944100721786801}
-  - component: {fileID: 8722460035560031591}
   - component: {fileID: 8267415858928399740}
+  - component: {fileID: 5115751431283369435}
   m_Layer: 0
   m_Name: RobotPrefab
   m_TagString: Untagged
@@ -1673,7 +1673,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8722460035560031590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.849022, y: 4.883503e-17, z: -21.993341}
+  m_LocalPosition: {x: -5.6611214, y: -3.9723415e-16, z: 25.025894}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5462944100219691700}
@@ -1694,13 +1694,27 @@ Animator:
   m_Controller: {fileID: 9100000, guid: a37a1ad6479b22644bb33c357fae5331, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!195 &8722460035560031591
+--- !u!114 &8267415858928399740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722460035560031590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c49621cbe0e8a48bf630ed32781cf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PathUpdateTime: 0.5
+  AgentJob: Civillian
+--- !u!195 &5115751431283369435
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1722,16 +1736,3 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8267415858928399740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8722460035560031590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97c49621cbe0e8a48bf630ed32781cf4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AgentJob: Civillian

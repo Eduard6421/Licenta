@@ -85,7 +85,7 @@ public class GoalManager : MonoBehaviour
 
     public static bool IsReady()
     {
-        Debug.Log("ready");
+        Debug.Log("fuck yeah" + HotspotsReady);
         return HotspotsReady;
     }
 

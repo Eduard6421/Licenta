@@ -1,16 +1,20 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class KinematicEntity : MonoBehaviour
 {
+    [SerializeField]
+    private float PathUpdateTime = 0.5f;
+    private float CurrentTime = 0f;
 
     private NavMeshAgent NavAgent;
     private Animator RobotAnimator;
 
     private ISteerable steeringType;
     private SteeringOutput steering;
+    private SteeringOutput oldSteering;
 
     private float MaxSpeed;
     private float MaxRotation;
@@ -38,8 +42,9 @@ public class KinematicEntity : MonoBehaviour
 
     IEnumerator AgentStartSleep()
     {
+        enabled = false;
         yield return new WaitUntil(() => GoalManager.IsReady() == true);
-
+        enabled = true;
     }
 
     public Vector3 GetVelocity()
@@ -70,10 +75,11 @@ public class KinematicEntity : MonoBehaviour
         NavAgent = this.GetComponent<NavMeshAgent>();
         BehaviourMaster = GoalManager.GetInstance();
         CurrentPath = new NavMeshPath();
+        TargetKinematic = null;
 
-        enabled = false;
+
         AgentStartSleep();
-        enabled = true;
+
 
     }
 
@@ -101,19 +107,12 @@ public class KinematicEntity : MonoBehaviour
         else
         {
             velocity += steering.linearSpeed;
-            Debug.Log(NavAgent.desiredVelocity);
-            velocity += NavAgent.desiredVelocity;
+            velocity = Utilities.ClipVector(velocity,3f);
+            NavAgent.velocity = Utilities.ClipVector(velocity + NavAgent.desiredVelocity*0.2f, 3f);
+            //Debug.Log(NavAgent.desiredVelocity);
 
-            if (velocity.magnitude > MaxSpeed)
-            {
-
-                velocity.Normalize();
-                velocity = velocity * MaxSpeed;
-            }
-
-            NavAgent.velocity = velocity;
-
-            RobotAnimator.SetFloat("speed", velocity.magnitude);
+            RobotAnimator.SetFloat("speed", NavAgent.velocity.magnitude);
+            
         }
 
         if (steering.angularSpeed == 0)
@@ -123,17 +122,23 @@ public class KinematicEntity : MonoBehaviour
         }
         else
         {
-
             rotation += steering.angularSpeed;
-
-            if (Mathf.Abs(rotation) > MaxRotation)
+            
+            if(rotation > MaxRotation)
             {
-                rotation = rotation / Mathf.Abs(rotation);
-                rotation = rotation * MaxRotation;
+                rotation = Mathf.Abs(rotation) / rotation * MaxRotation;
+            }
+            NavAgent.angularSpeed += rotation;
+
+            if (NavAgent.angularSpeed > MaxRotation)
+            {
+                NavAgent.angularSpeed = Mathf.Abs(NavAgent.angularSpeed) / NavAgent.angularSpeed * MaxRotation;
             }
 
-            NavAgent.angularSpeed = rotation;
-            RobotAnimator.SetFloat("rotation", rotation);
+
+
+
+            RobotAnimator.SetFloat("rotation", NavAgent.angularSpeed);
         }
 
 
@@ -143,6 +148,8 @@ public class KinematicEntity : MonoBehaviour
     {
         float distance;
         distance = (targetPosition - transform.position).magnitude;
+
+        CurrentTime += Time.deltaTime;
 
         if (distance < 0.5f)
         {
@@ -162,13 +169,23 @@ public class KinematicEntity : MonoBehaviour
                 }
             }
         }
-        else if (steeringType == null || CurrentTargetPosition != targetPosition)
+        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
         {
+            NavMeshHit hit;
+            NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
+
+            CurrentTime = 0;
+
             Target = target;
+            targetPosition = hit.position;
+
             NavAgent.CalculatePath(targetPosition, CurrentPath);
-            NavAgent.SetDestination(targetPosition);
+            NavAgent.SetPath(CurrentPath);
+
             CurrentTargetPosition = targetPosition;
+
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
+
             steeringType = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.PathFollowing, out MaxSpeed, out MaxRotation, cornerArray, new List<GameObject>());
 
         }
@@ -181,13 +198,11 @@ public class KinematicEntity : MonoBehaviour
     {
         if (CurrentGoal != null)
         {
-            CurrentGoal.GoalFunction(CurrentGoal.InteractionObject, CurrentGoal.TargetPosition, CurrentGoal.InteractionTime); 
-            if(steeringType != null)
+            CurrentGoal.GoalFunction(CurrentGoal.InteractionObject, CurrentGoal.TargetPosition, CurrentGoal.InteractionTime);
+            if (steeringType != null)
             {
-                this.transform.position += velocity * Time.deltaTime;
-                this.transform.Rotate(Vector3.up * rotation);
                 IsKinematicTarget();
-                
+
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity, rotation, Target.transform.position, Target.transform.eulerAngles.y, TargetVelocity, targetRotation);
                 UpdateSteering();
             }

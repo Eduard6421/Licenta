@@ -10,7 +10,15 @@ public class HotSpot : MonoBehaviour
 
     void Start()
     {
-        HotSpotManager.GetInstance().AddHotSpot(this.name, MaxQueue);
+        StartCoroutine(HotSpotSleep());
     }
+
+    IEnumerator HotSpotSleep()
+    {
+        yield return new WaitUntil(() => HotSpotManager.GetInstance().IsReady() == true);
+        HotSpotManager.GetInstance().AddHotSpot(this.name, MaxQueue);
+
+    }
+
 
 }
