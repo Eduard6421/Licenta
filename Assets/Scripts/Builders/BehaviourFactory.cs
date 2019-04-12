@@ -5,7 +5,7 @@ using UnityEngine;
 public static class BehaviourFactory
 {
 
-    public static ISteerable GetCharacterBehaviour(Utilities.Behaviour selectedBehaviour, out float maxSpeed, out float maxRotation, List<Vector3> CharacterPath, List<GameObject> Entities)
+    public static ISteerable GetCharacterBehaviour(Utilities.Behaviour selectedBehaviour, float maxSpeed, float maxRotation, List<Vector3> CharacterPath, List<GameObject> Entities)
     {
 
         ISteerable steeringType;
@@ -166,7 +166,7 @@ public static class BehaviourFactory
 
 
                 MaxAcceleration = 0.01f;
-                MaxSpeed = 1f;
+                MaxSpeed = 3f;
                 MaxAngularAcceleration = 0.025f;
                 MaxRotation = 1.5f;
                 SlowRadius = 15f;
@@ -265,10 +265,8 @@ public static class BehaviourFactory
 
         }
 
-        maxSpeed = MaxSpeed;
-        maxRotation = MaxRotation;
-        return steeringType;
 
+        return steeringType;
 
     }
 

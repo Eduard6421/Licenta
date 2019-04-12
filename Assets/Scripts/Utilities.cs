@@ -10,6 +10,10 @@ public static class Utilities
         Align = 1, AlignOpposite, Arrive, Blended, CollisionAvoidance, Evade, Face, Leave, LookAndRun, ObstacleAvoidance, PathFollowing, Pursue, Separation, VelocityMatch, Wander,
     };
 
+    public enum Jobs
+    {
+        Civilian=1,Patrolman,
+    };
 
 
     public static float MapToInterval(float value, float left, float right, float toLeft, float toRight)

@@ -30,6 +30,7 @@ public class EntitySpawner : MonoBehaviour
         else if (instance != this)
         {
             Destroy(gameObject);
+            return;
         }
         DontDestroyOnLoad(gameObject);
 

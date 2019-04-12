@@ -26,6 +26,7 @@ public class GoalManager : MonoBehaviour
         else if(instance != this)
         {
             Destroy(gameObject);
+            return;
         }
         DontDestroyOnLoad(gameObject);
     }
@@ -36,7 +37,7 @@ public class GoalManager : MonoBehaviour
     }
 
 
-    public Goal RequestBehaviour(GameObject agent, string agentJob)
+    public Goal RequestBehaviour(GameObject agent, Utilities.Jobs agentJob)
     {
 
         Goal newGoal;

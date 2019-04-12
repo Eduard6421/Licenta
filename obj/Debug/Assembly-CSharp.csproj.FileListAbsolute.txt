@@ -280,3 +280,7 @@ E:\Facultate\Licenta\Licenta\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.
 E:\Facultate\Licenta\Licenta\obj\Debug\Assembly-CSharp.csproj.CopyComplete
 E:\Facultate\Licenta\Licenta\obj\Debug\Assembly-CSharp.dll
 E:\Facultate\Licenta\Licenta\obj\Debug\Assembly-CSharp.pdb
+C:\Users\Eduard\Desktop\Licenta\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+C:\Users\Eduard\Desktop\Licenta\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
+C:\Users\Eduard\Desktop\Licenta\obj\Debug\Assembly-CSharp.dll
+C:\Users\Eduard\Desktop\Licenta\obj\Debug\Assembly-CSharp.pdb

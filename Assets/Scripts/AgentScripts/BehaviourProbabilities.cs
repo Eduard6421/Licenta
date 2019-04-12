@@ -13,20 +13,20 @@ public static class BehaviourProbabilities
     private static float exitProbability;
     private static float total;
 
-    public static string GetBehaviourType(string AgentType)
+    public static string GetBehaviourType(Utilities.Jobs AgentType)
     {
 
 
         switch (AgentType)
         {
-            case "Civillian":
+            case Utilities.Jobs.Civilian:
                 interactProbability = 1f;
                 moveProbability = 0f;
                 meetProbabilty = 0f;
                 exitProbability = 0f;
                 break;
 
-            case "Cop":
+            default:
                 break;
         }
 
