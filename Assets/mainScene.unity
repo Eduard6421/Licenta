@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnRange: 5.97
-  spawnDensity: 50
+  spawnDensity: 47
 --- !u!4 &7835449
 Transform:
   m_ObjectHideFlags: 0

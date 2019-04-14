@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class KinematicEntity : MonoBehaviour
 {
     [SerializeField]
-    private Utilities.Jobs AgentJob = Utilities.Jobs.Civilian;
+    private Utilities.Jobs AgentJob;
 
     [SerializeField]
     private float PathUpdateTime = 0.5f;
@@ -107,7 +107,7 @@ public class KinematicEntity : MonoBehaviour
 
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
-            steeringType = AgentBehaviourBuilder.walkingSteering( MaxSpeed, MaxRotation, cornerArray, new List<GameObject>());
+            steeringType = AgentBehaviourBuilder.walkingSteering( 5f, 5f, cornerArray, new List<GameObject>());
 
         }
 
@@ -195,15 +195,18 @@ public class KinematicEntity : MonoBehaviour
     {
         velocity = Vector3.zero;
         rotation = 0f;
+        AgentJob = Utilities.Jobs.Civilian;
 
         RobotAnimator = this.GetComponent<Animator>();
         NavAgent = this.GetComponent<NavMeshAgent>();
 
         GoalMaster = GoalManager.GetInstance();
-        AgentSetBuilderType();
 
         CurrentPath = new NavMeshPath();
         TargetKinematic = null;
+
+
+        AgentSetBuilderType();
 
 
         AgentStartSleep();

@@ -52,7 +52,6 @@ public class BlendedSteeringBehaviour : ISteerable
         for (int i = 0; i < Behaviours.Count; ++i)
         {
             tempSteering = Behaviours[i].Behaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, targetPosition, targetOrientation, targetVelocity, targetRotation);
-            previousOutputs[i] = tempSteering;
 
             newSteering.linearSpeed += tempSteering.linearSpeed * Behaviours[i].Weight;
             newSteering.angularSpeed = tempSteering.angularSpeed * Behaviours[i].Weight;

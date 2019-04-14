@@ -38,19 +38,19 @@ public class ObstacleAvoidanceBehaviour : ISteerable
         {
             targetPosition = hit.point + hit.normal * AvoidanceDistance;
             newSteering = SeekBehaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, targetPosition, targetOrientation, targetVelocity, targetRotation);
-            Debug.Log(newSteering.linearSpeed);
+            //Debug.Log(newSteering.linearSpeed);
         }
         else if (Physics.Raycast(characterPosition, leftWhisker, out hit, LookAhead))
         {
             targetPosition = hit.point + hit.normal * AvoidanceDistance;
             newSteering = SeekBehaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, targetPosition, targetOrientation, targetVelocity, targetRotation);
-            Debug.Log(newSteering.linearSpeed);
+            //Debug.Log(newSteering.linearSpeed);
         }
         else if (Physics.Raycast(characterPosition, rightWhisker, out hit, LookAhead))
         {
             targetPosition = hit.point + hit.normal * AvoidanceDistance;
             newSteering = SeekBehaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, targetPosition, targetOrientation, targetVelocity, targetRotation);
-            Debug.Log(newSteering.linearSpeed);
+            //Debug.Log(newSteering.linearSpeed);
         }
 
 

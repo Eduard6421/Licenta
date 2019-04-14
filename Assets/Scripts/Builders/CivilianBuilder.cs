@@ -14,11 +14,11 @@ public class CivilianBuilder : BehaviourBuilder
         ISteerable pathFollowing = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.PathFollowing, maxSpeed,
             maxRotation, cornerArray, agents);
 
-        ISteerable obstacleAvoidance = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.CollisionAvoidance,
+        ISteerable obstacleAvoidance = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.ObstacleAvoidance,
             maxSpeed, maxRotation, cornerArray, agents);
 
         WeightedBehaviour path_follow = new WeightedBehaviour(pathFollowing,0.6f);    
-        WeightedBehaviour collision_avoidance  = new WeightedBehaviour(obstacleAvoidance,0.3f);
+        WeightedBehaviour collision_avoidance  = new WeightedBehaviour(obstacleAvoidance,0.1f);
 
         List<WeightedBehaviour> behaviourList = new List<WeightedBehaviour>();
 
