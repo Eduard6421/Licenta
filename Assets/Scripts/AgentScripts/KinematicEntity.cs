@@ -108,12 +108,10 @@ public class KinematicEntity : MonoBehaviour
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
             steeringType = AgentBehaviourBuilder.walkingSteering( 5f, 5f, cornerArray, new List<GameObject>());
-
         }
-
-
     }
 
+    
 
     void AgentSetBuilderType()
     {

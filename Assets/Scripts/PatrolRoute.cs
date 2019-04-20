@@ -2,17 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Patrolroute : MonoBehaviour
+public class PatrolRoute : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private List<Vector3> checkpointPositions;
+    private PatrolManager manager;
+
+    void Awake()
     {
-        
+        checkpointPositions = new List<Vector3>();
+
+        for(int i = 0; i < this.transform.childCount; ++i)
+        {
+            checkpointPositions.Add(this.transform.GetChild(i).position);
+        }
+
+        manager = PatrolManager.GetInstance();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        manager.AddPatrolRoute(checkpointPositions);       
     }
+
+
 }

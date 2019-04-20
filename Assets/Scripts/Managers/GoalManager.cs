@@ -58,6 +58,16 @@ public class GoalManager : MonoBehaviour
                 newGoal = new Goal(newHandler, 3f, hotspot.transform.position, hotspot);
                 return newGoal;
 
+
+            case "Patrol":
+                
+
+
+
+
+
+                break;
+
             case "Move":
                     
                 
@@ -66,6 +76,8 @@ public class GoalManager : MonoBehaviour
 
             case "Meet":
                 break;
+
+
 
         }
 

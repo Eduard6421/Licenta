@@ -7,6 +7,7 @@ public class BuilderManager : MonoBehaviour
 
     private static BuilderManager instance = null;
     private static CivilianBuilder civilianBuilder = null;
+    private static GoalBuilder 
 
 
     void Awake()

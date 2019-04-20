@@ -7,8 +7,7 @@ public class PatrolManager : MonoBehaviour
 
     public static PatrolManager instance;
 
-    private Queue<List<GameObject>> PatrolRoutes;
-
+    private Queue<List<Vector3>> PatrolRoutes;
 
     void Awake()
     {
@@ -22,16 +21,20 @@ public class PatrolManager : MonoBehaviour
             return;
         }
         DontDestroyOnLoad(gameObject);
-        PatrolRoutes = new Queue<List<GameObject>>();
+        PatrolRoutes = new Queue<List<Vector3>>();
     }
 
+    public static PatrolManager GetInstance()
+    {
+        return instance;
+    }
 
-    public void AddPatrolRoute(List<GameObject> PatrolRoute)
+    public void AddPatrolRoute(List<Vector3> PatrolRoute)
     {
         PatrolRoutes.Enqueue(PatrolRoute);
     }
 
-    public List<GameObject> GetPatrolRoute()
+    public List<Vector3> GetPatrolRoute()
     {
         return PatrolRoutes.Dequeue();
     }
