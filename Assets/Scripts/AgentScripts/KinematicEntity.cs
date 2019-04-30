@@ -65,7 +65,7 @@ public class KinematicEntity : MonoBehaviour
         this.Target = target;
     }
 
-    public void InteractionGoal(GameObject target, Vector3 targetPosition, float interactionTime)
+    public void InteractionGoal(List<GameObject> targets, List<Vector3> targetPositions, float interactionTime)
     {
         float distance;
         distance = (targetPosition - transform.position).magnitude;
@@ -216,7 +216,7 @@ public class KinematicEntity : MonoBehaviour
     {
         if (CurrentGoal != null)
         {
-            CurrentGoal.GoalFunction(CurrentGoal.InteractionObject, CurrentGoal.TargetPosition,
+            CurrentGoal.GoalFunction(CurrentGoal.InteractionObjects, CurrentGoal.TargetPositions,
                 CurrentGoal.InteractionTime);
             if (steeringType != null)
             {

@@ -2,28 +2,79 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public delegate void GoalHandler(List<GameObject> target, List<Vector3> targetPosition, float interactionTime);
+
 public class Goal
 {
-    public delegate void GoalHandler(GameObject target, Vector3 targetPosition, float interactionTime);
 
     public float InteractionTime { get; private set; }
-    public GameObject InteractionObject { get; private set; }
-    public Vector3 TargetPosition { get; private set; }
-    public Queue<Vector3> TargetArray;
+    public List<GameObject> InteractionObjects { get; private set; }
+    public List<Vector3> TargetPositions { get; private set; }
     public GoalHandler GoalFunction { get; private set; }
 
-    public Goal(GoalHandler goalFunction, float interactionTime, Vector3 targetPosition, GameObject interactionObjct)
+    private bool RightFlow;
+    private int CurrentTargetIndex;
+
+    public Goal(GoalHandler goalFunction, float interactionTime, List<Vector3> targetPosition, List<GameObject> interactionObject)
     {
         this.GoalFunction = goalFunction;
         this.InteractionTime = interactionTime;
-        this.InteractionObject = interactionObjct;
-        this.TargetPosition = targetPosition;
-        this.TargetArray = new List<Vector3();
+        this.InteractionObjects = interactionObject;
+        this.TargetPositions = targetPosition;
+        this.CurrentTargetIndex = 0;
+        this.RightFlow = true;
     }
 
-    public bool UpdateTarget()
+
+    public GameObject GetCurrentTargetObject()
     {
-        this.TargetPosition = NextPosition.Dequeue();
+        return InteractionObjects[CurrentTargetIndex];
     }
+
+    public Vector3 GetCurrentTargetPosition()
+    {
+        return TargetPositions[CurrentTargetIndex];
+    }
+
+
+    public bool UpdateSequentialTarget()
+    {
+        if(this.TargetPositions.Count > 0)
+        {
+            return false;
+        }
+
+        if (this.CurrentTargetIndex < this.TargetPositions.Count - 1)
+        {
+            CurrentTargetIndex++;
+            return true;
+        }
+
+
+        return false;
+    }
+    public void UpdatePatrolTarget()
+    {
+        if(this.CurrentTargetIndex == this.TargetPositions.Count - 1)
+        {
+            RightFlow = false;
+        }
+        if(this.CurrentTargetIndex == 0)
+        {
+            RightFlow = true;
+        }
+
+        if(RightFlow)
+        {
+            this.CurrentTargetIndex++;
+        }
+        else
+        {
+            this.CurrentTargetIndex--;
+        }
+ 
+    }
+
 
 }

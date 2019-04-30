@@ -53,7 +53,7 @@ public class GoalManager : MonoBehaviour
                     goto case "Move";
                 }
 
-                Goal.GoalHandler newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
+                GoalHandler newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
 
                 newGoal = new Goal(newHandler, 3f, hotspot.transform.position, hotspot);
                 return newGoal;
