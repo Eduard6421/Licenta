@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public delegate void GoalHandler(List<GameObject> target, List<Vector3> targetPosition, float interactionTime);
+public delegate void GoalHandler();
 
 public class Goal
 {

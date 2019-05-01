@@ -36,7 +36,14 @@ public class PatrolManager : MonoBehaviour
 
     public List<Vector3> GetPatrolRoute()
     {
-        return PatrolRoutes.Dequeue();
+        if(PatrolRoutes.Count > 0)
+        {
+            return PatrolRoutes.Dequeue();
+        }
+        else
+        {
+            return null;
+        }
     }
 
 

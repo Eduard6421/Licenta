@@ -27,9 +27,12 @@ public class KinematicEntity : MonoBehaviour
 
     private GameObject Target;
     private KinematicEntity TargetKinematic;
+
     private Vector3 TargetVelocity;
+    private float TargetRotation;
+
     private Vector3 CurrentTargetPosition;
-    private float targetRotation;
+    private float CurrentTargetOrientation;
 
     private Goal CurrentGoal;
     private float CurrentInteractionTime;
@@ -65,9 +68,12 @@ public class KinematicEntity : MonoBehaviour
         this.Target = target;
     }
 
-    public void InteractionGoal(List<GameObject> targets, List<Vector3> targetPositions, float interactionTime)
+    //Does not make use of object interaction
+    public void PatrolGoal()
     {
         float distance;
+        Vector3 targetPosition = CurrentGoal.GetCurrentTargetPosition();
+
         distance = (targetPosition - transform.position).magnitude;
 
         CurrentTime += Time.deltaTime;
@@ -83,7 +89,58 @@ public class KinematicEntity : MonoBehaviour
             {
                 CurrentInteractionTime += Time.deltaTime;
 
-                if (CurrentInteractionTime > interactionTime)
+                if (CurrentInteractionTime > CurrentGoal.InteractionTime)
+                {
+                    CurrentGoal.UpdatePatrolTarget();
+                }
+            }
+        }
+        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
+        {
+            NavMeshHit hit;
+            NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
+
+            CurrentTime = 0;
+
+            targetPosition = hit.position;
+
+            NavAgent.CalculatePath(targetPosition, CurrentPath);
+            NavAgent.SetPath(CurrentPath);
+
+            CurrentTargetPosition = targetPosition;
+            CurrentTargetOrientation = 0;
+
+            List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
+
+            steeringType = AgentBehaviourBuilder.walkingSteering(5f, 5f, cornerArray, new List<GameObject>());
+        }
+
+    }
+
+
+    //Makes use of object interaction
+    public void InteractionGoal()
+    {
+        float distance;
+
+        Vector3 targetPosition = CurrentGoal.GetCurrentTargetPosition();
+
+        distance = (targetPosition - transform.position).magnitude;
+
+        CurrentTime += Time.deltaTime;
+
+        if (distance < 0.5f)
+        {
+            if (steeringType != null)
+            {
+                steeringType = null;
+                CurrentInteractionTime = 0;
+            }
+            else
+            {
+                CurrentInteractionTime += Time.deltaTime;
+
+                if (CurrentInteractionTime > CurrentGoal.InteractionTime)
                 {
                     Debug.Log("Finished");
                     CurrentGoal = null;
@@ -97,13 +154,14 @@ public class KinematicEntity : MonoBehaviour
 
             CurrentTime = 0;
 
-            Target = target;
+            Target = CurrentGoal.GetCurrentTargetObject();
             targetPosition = hit.position;
 
             NavAgent.CalculatePath(targetPosition, CurrentPath);
             NavAgent.SetPath(CurrentPath);
 
             CurrentTargetPosition = targetPosition;
+            CurrentTargetOrientation = 0;
 
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
@@ -136,12 +194,12 @@ public class KinematicEntity : MonoBehaviour
         if (TargetKinematic != null)
         {
             TargetVelocity = TargetKinematic.GetVelocity();
-            targetRotation = TargetKinematic.GetRotation();
+            TargetRotation = TargetKinematic.GetRotation();
         }
         else
         {
             TargetVelocity = Vector3.zero;
-            targetRotation = 0;
+            TargetRotation = 0;
         }
     }
 
@@ -193,7 +251,7 @@ public class KinematicEntity : MonoBehaviour
     {
         velocity = Vector3.zero;
         rotation = 0f;
-        AgentJob = Utilities.Jobs.Civilian;
+        AgentJob = Utilities.Jobs.Patrolman;
 
         RobotAnimator = this.GetComponent<Animator>();
         NavAgent = this.GetComponent<NavMeshAgent>();
@@ -202,7 +260,6 @@ public class KinematicEntity : MonoBehaviour
 
         CurrentPath = new NavMeshPath();
         TargetKinematic = null;
-
 
         AgentSetBuilderType();
 
@@ -216,15 +273,14 @@ public class KinematicEntity : MonoBehaviour
     {
         if (CurrentGoal != null)
         {
-            CurrentGoal.GoalFunction(CurrentGoal.InteractionObjects, CurrentGoal.TargetPositions,
-                CurrentGoal.InteractionTime);
+            CurrentGoal.GoalFunction();
             if (steeringType != null)
             {
                 IsKinematicTarget();
 
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
-                    rotation, Target.transform.position, Target.transform.eulerAngles.y, TargetVelocity,
-                    targetRotation);
+                    rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
+                    TargetRotation);
                 UpdateSteering();
             }
         }

@@ -10,6 +10,8 @@ public class GoalManager : MonoBehaviour
 
     private HotSpotManager HotspotManagerInstance;
 
+    private PatrolManager PatrolManagerInstance;
+
     private static bool HotspotsReady = false;
 
     public static GoalManager GetInstance()
@@ -34,6 +36,7 @@ public class GoalManager : MonoBehaviour
     void Start()
     {
         HotspotManagerInstance = HotSpotManager.GetInstance();
+        PatrolManagerInstance = PatrolManager.GetInstance();
     }
 
 
@@ -41,6 +44,7 @@ public class GoalManager : MonoBehaviour
     {
 
         Goal newGoal;
+        GoalHandler newHandler;
         string behaviourType = BehaviourProbabilities.GetBehaviourType(agentJob);
 
         switch (behaviourType)
@@ -53,20 +57,24 @@ public class GoalManager : MonoBehaviour
                     goto case "Move";
                 }
 
-                GoalHandler newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
+                newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
 
-                newGoal = new Goal(newHandler, 3f, hotspot.transform.position, hotspot);
+                newGoal = new Goal(goalFunction: newHandler, interactionTime: 3f, targetPosition: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
                 return newGoal;
 
 
             case "Patrol":
-                
 
+                List<Vector3> patrolRoute = PatrolManagerInstance.GetPatrolRoute();
+                if(patrolRoute == null)
+                {
+                    goto case "Move";
+                }
 
+                newHandler = agent.GetComponent<KinematicEntity>().PatrolGoal;
 
-
-
-                break;
+                newGoal = new Goal(goalFunction : newHandler, interactionTime: 0.5f, targetPosition : patrolRoute, interactionObject : null);
+                return newGoal;
 
             case "Move":
                     
