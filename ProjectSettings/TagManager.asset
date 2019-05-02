@@ -11,6 +11,7 @@ TagManager:
   - Target
   - Manager
   - Route
+  - Exit
   layers:
   - Default
   - TransparentFX
