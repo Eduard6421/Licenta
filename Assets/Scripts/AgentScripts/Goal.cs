@@ -8,7 +8,7 @@ public delegate void GoalHandler();
 public class Goal
 {
 
-    public float InteractionTime { get; private set; }
+    public float GoalActionTime { get; private set; }
     public List<GameObject> InteractionObjects { get; private set; }
     public List<Vector3> TargetPositions { get; private set; }
     public GoalHandler GoalFunction { get; private set; }
@@ -16,10 +16,10 @@ public class Goal
     private bool RightFlow;
     private int CurrentTargetIndex;
 
-    public Goal(GoalHandler goalFunction, float interactionTime, List<Vector3> targetPosition, List<GameObject> interactionObject)
+    public Goal(GoalHandler goalFunction, float goalActionTime, List<Vector3> targetPosition, List<GameObject> interactionObject)
     {
         this.GoalFunction = goalFunction;
-        this.InteractionTime = interactionTime;
+        this.GoalActionTime = goalActionTime;
         this.InteractionObjects = interactionObject;
         this.TargetPositions = targetPosition;
         this.CurrentTargetIndex = 0;

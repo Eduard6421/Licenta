@@ -54,6 +54,16 @@ public class HotSpotManager : MonoBehaviour
         return hotspot;
     }
 
+    public GameObject getRandomHotSpot(int numOfSpots)
+    {
+        string HotSpotId = HotspotAvailability.GetRandomResource(numOfSpots);
+
+        GameObject hotspot = GameObject.Find(HotSpotId);
+
+        return hotspot;
+    }
+
+
 
     public void AddHotSpot(string hotspotID, int numOfSpots)
     {

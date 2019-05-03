@@ -40,56 +40,68 @@ public class GoalManager : MonoBehaviour
     }
 
 
-    public Goal RequestBehaviour(GameObject agent, Utilities.Jobs agentJob)
+    public Goal RequestBehaviour(GameObject agent, Utilities.Jobs agentJob, int groupID)
     {
 
         Goal newGoal;
         GoalHandler newHandler;
-        string behaviourType = BehaviourProbabilities.GetBehaviourType(agentJob);
 
-        switch (behaviourType)
+        if (agentJob == Utilities.Jobs.GroupMember)
         {
-            case "Interact":
-
-                GameObject hotspot = HotspotManagerInstance.getRandomHotSpot();
-                if(hotspot == null)
-                {
-                    goto case "Move";
-                }
-
-                newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
-
-                newGoal = new Goal(goalFunction: newHandler, interactionTime: 3f, targetPosition: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
-                return newGoal;
 
 
-            case "Patrol":
-
-                List<Vector3> patrolRoute = PatrolManagerInstance.GetPatrolRoute();
-                if(patrolRoute == null)
-                {
-                    goto case "Move";
-                }
-
-                newHandler = agent.GetComponent<KinematicEntity>().PatrolGoal;
-
-                newGoal = new Goal(goalFunction : newHandler, interactionTime: 0.5f, targetPosition : patrolRoute, interactionObject : null);
-                return newGoal;
-
-            case "Move":
-                    
-                
-
-                break;
-
-            case "Meet":
-                break;
-
+            return null;
 
 
         }
+        else
+        {
 
-        return null;
+            string behaviourType = BehaviourProbabilities.GetBehaviourType(agentJob);
+
+            switch (behaviourType)
+            {
+                case "Interact":
+
+                    GameObject hotspot = HotspotManagerInstance.getRandomHotSpot();
+                    if (hotspot == null)
+                    {
+                        goto case "Move";
+                    }
+
+                    newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
+
+                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 3f, targetPosition: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
+                    return newGoal;
+
+
+                case "Patrol":
+
+                    List<Vector3> patrolRoute = PatrolManagerInstance.GetPatrolRoute();
+                    if (patrolRoute == null)
+                    {
+                        goto case "Move";
+                    }
+
+                    newHandler = agent.GetComponent<KinematicEntity>().PatrolGoal;
+
+                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 0.5f, targetPosition: patrolRoute, interactionObject: null);
+                    return newGoal;
+
+                case "Move":
+
+
+
+                    break;
+
+                case "Meet":
+                    break;
+
+            }
+
+            return null;
+
+        }
 
     }
 

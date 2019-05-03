@@ -15,6 +15,37 @@ public static class BehaviourProbabilities
 
     private static float patrolProbability;
 
+    private static List<Utilities.Jobs> jobList = new List<Utilities.Jobs> { Utilities.Jobs.Civilian, Utilities.Jobs.Patrolman, Utilities.Jobs.GroupMember };
+    private static List<float> probabilities = new List<float> { 0f, 0f, 1f };
+
+
+    public static void StopGroupDistributon()
+    {
+        probabilities[0] = probabilities[0] + probabilities[2] / 2;
+        probabilities[1] = probabilities[1] + probabilities[2] / 2;
+        probabilities[2] = 0;
+    }
+
+
+    public static Utilities.Jobs GetAgentType()
+    {
+        float random = Random.Range(0, 1f);
+        
+
+        for(int i = 0; i < probabilities.Count; ++i)
+        {
+            if(random <= probabilities[i])
+            {
+                return jobList[i];
+            }
+        }
+
+        return jobList[jobList.Count];
+
+    }
+
+
+
     public static string GetBehaviourType(Utilities.Jobs AgentType)
     {
         float random;
@@ -22,12 +53,11 @@ public static class BehaviourProbabilities
         switch (AgentType)
         {
             case Utilities.Jobs.Civilian:
+
                 interactProbability = 1f;
                 moveProbability = 0f;
                 meetProbabilty = 0f;
                 exitProbability = 0f;
-
-                total = interactProbability + moveProbability+ meetProbabilty + exitProbability;
 
                 random = Random.Range(0, 1f);
 
@@ -44,8 +74,6 @@ public static class BehaviourProbabilities
             case Utilities.Jobs.Patrolman:
                 interactProbability = 0.0f;
                 patrolProbability = 1f;
-
-                total = interactProbability + patrolProbability + moveProbability + meetProbabilty + exitProbability;
 
                 random = Random.Range(0, 1f);
 

@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class CivilianBuilder : BehaviourBuilder
 {
-
-    public CivilianBuilder()
+    public  BlendedSteeringBehaviour walkingSteering(List<Vector3> cornerArray, List<GameObject> agents)
     {
-    }
 
-    public override BlendedSteeringBehaviour walkingSteering(float maxSpeed, float maxRotation, List<Vector3> cornerArray, List<GameObject> agents)
-    {
+        float maxSpeed = 5f;
+        float maxRotation = 5f;
+
         ISteerable pathFollowing = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.PathFollowing, maxSpeed,
             maxRotation, cornerArray, agents);
 
@@ -30,7 +29,7 @@ public class CivilianBuilder : BehaviourBuilder
     }
 
     
-    public override BlendedSteeringBehaviour runningSteering(float maxSpeed, float maxRotation, List<Vector3> cornerArray, List<GameObject> agents)
+    public  BlendedSteeringBehaviour runningSteering(List<Vector3> cornerArray, List<GameObject> agents)
     {
         return null;
     }

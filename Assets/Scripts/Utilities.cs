@@ -12,7 +12,7 @@ public static class Utilities
 
     public enum Jobs
     {
-        Civilian=1,Patrolman,
+        Civilian=1,Patrolman,GroupMember
     };
 
 
@@ -62,7 +62,17 @@ public static class Utilities
         return inputVector;
     }
 
-
+    public static List<T> FisherYatesSuffle<T>(List<T> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            T temp = list[i];
+            int randomIndex = Random.Range(0, list.Count);
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
+        return list;
+    }
 
     public class RandomizedResourceArray
     {
@@ -102,6 +112,24 @@ public static class Utilities
 
         }
 
+        public void UpdateResource(string key, int value)
+        {
+            if (UnavailableResources.Contains(key))
+            {
+                UnavailableResources.Remove(key);
+                AddResource(key, value);
+            }
+            else
+            {
+                int currentCount;
+
+                AvailableResources.TryGetValue(key, out currentCount);
+                AvailableResources[key] = currentCount + value;
+            }
+
+        }
+
+
         public void DecreaseResource(string key)
         {
             if (UnavailableResources.Contains(key))
@@ -131,6 +159,35 @@ public static class Utilities
 
         }
 
+        public void DecreaseResource(string key,int numUsed)
+        {
+            if (UnavailableResources.Contains(key))
+            {
+                throw new System.Exception("Tried to decrease a fully used resource");
+            }
+            else
+            {
+                int currentCount;
+                AvailableResources.TryGetValue(key, out currentCount);
+
+                if (currentCount - numUsed < 0)
+                {
+                    throw new System.Exception("Cannot decrease more that total resources");
+                }
+                else if (currentCount - numUsed == 0)
+                {
+                    UnavailableResources.Add(key);
+                    AvailableResources.Remove(key);
+                }
+                else
+                {
+                    AvailableResources[key] = currentCount - numUsed;
+                }
+
+            }
+
+        }
+
 
         public string GetRandomResource()
         {
@@ -146,6 +203,30 @@ public static class Utilities
             else
                 return "";
         }
+
+        public string GetRandomResource(int numOfSpots)
+        {
+            List<int> availableSpotsPosition = new List<int>();
+            
+            for(int i = 0; i < AvailableResources.Keys.Count; ++i)
+            {
+                int currentCount;
+                AvailableResources.TryGetValue(AvailableResources.Keys[i], out currentCount);
+                
+            }
+            if(availableSpotsPosition.Count == 0)
+            {
+                return "";
+            }
+
+            int randomElement = Random.Range(0, availableSpotsPosition.Count - 1);
+
+            string ResourceName = AvailableResources.Keys[availableSpotsPosition[randomElement]];
+            DecreaseResource(ResourceName, numOfSpots);
+            return ResourceName;
+
+        }
+
 
 
 
