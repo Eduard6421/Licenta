@@ -15,53 +15,89 @@ public static class BehaviourProbabilities
 
     private static float patrolProbability;
 
-    public static string GetBehaviourType(Utilities.Jobs AgentType)
+    private static List<Utilities.Jobs> jobList = new List<Utilities.Jobs> { Utilities.Jobs.Civilian, Utilities.Jobs.Patrolman, Utilities.Jobs.GroupMember };
+    private static List<float> probabilities = new List<float> { 0f, 0f, 1f };
+
+
+    public static void StopGroupDistributon()
+    {
+        probabilities[0] = probabilities[0] + probabilities[2] / 2;
+        probabilities[1] = probabilities[1] + probabilities[2] / 2;
+        probabilities[2] = 0;
+    }
+
+
+    public static Utilities.Jobs GetAgentType()
+    {
+        float random = Random.Range(0, 1f);
+        
+
+        for(int i = 0; i < probabilities.Count; ++i)
+        {
+            if(random <= probabilities[i])
+            {
+                return jobList[i];
+            }
+        }
+
+        return jobList[0];
+
+    }
+
+
+
+    public static Utilities.Actions GetBehaviourType(Utilities.Jobs AgentType)
     {
         float random;
 
         switch (AgentType)
         {
             case Utilities.Jobs.Civilian:
+
                 interactProbability = 1f;
                 moveProbability = 0f;
-                meetProbabilty = 0f;
                 exitProbability = 0f;
-
-                total = interactProbability + moveProbability+ meetProbabilty + exitProbability;
 
                 random = Random.Range(0, 1f);
 
                 if (random <= interactProbability)
-                    return "Interact";
+                    return Utilities.Actions.Interact;
                 if (random <= moveProbability)
-                    return "Move";
-                if (random <= meetProbabilty)
-                    return "Meet";
-                return "Exit";
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
 
 
             case Utilities.Jobs.Patrolman:
                 interactProbability = 0.0f;
                 patrolProbability = 1f;
-
-                total = interactProbability + patrolProbability + moveProbability + meetProbabilty + exitProbability;
+                exitProbability = 0f;
 
                 random = Random.Range(0, 1f);
 
                 if (random <= interactProbability)
-                    return "Interact";
+                    return Utilities.Actions.Interact;
                 if (random <= patrolProbability)
-                    return "Patrol";
+                    return Utilities.Actions.Patrol;
                 if (random <= moveProbability)
-                    return "Move";
-                if (random <= meetProbabilty)
-                    return "Meet";
-                return "Exit";
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
+            case Utilities.Jobs.GroupMember:
+                interactProbability = 1f;
+                moveProbability = 0;
+                exitProbability = 0f;
+
+                random = Random.Range(0, 1f);
+
+                if (random <= interactProbability)
+                    return Utilities.Actions.Interact;
+                if (random <= moveProbability)
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
             default:
-                return "Exit";
+                return Utilities.Actions.Exit;
         }
 
     }

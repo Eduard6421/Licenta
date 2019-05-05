@@ -63,8 +63,10 @@
     <Compile Include="Assets\Locomotion Setup\Locomotion\Scripts\Locomotion.cs" />
     <Compile Include="Assets\Locomotion Setup\Scripts\JoystickToEvents.cs" />
     <Compile Include="Assets\Locomotion Setup\Scripts\LocomotionPlayer.cs" />
+    <Compile Include="Assets\MenuScript.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\BehaviourProbabilities.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\Goal.cs" />
+    <Compile Include="Assets\Scripts\AgentScripts\GroupStatus.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\KinematicEntity.cs" />
     <Compile Include="Assets\Scripts\Behaviours\AlignBehaviour.cs" />
     <Compile Include="Assets\Scripts\Behaviours\AlignOppositeBehaviour.cs" />
@@ -90,15 +92,34 @@
     <Compile Include="Assets\Scripts\Builders\AgentSteeringBuilder.cs" />
     <Compile Include="Assets\Scripts\Builders\BehaviourFactory.cs" />
     <Compile Include="Assets\Scripts\Builders\CivilianBuilder.cs" />
+    <Compile Include="Assets\Scripts\GroupTarget.cs" />
     <Compile Include="Assets\Scripts\HotSpot.cs" />
     <Compile Include="Assets\Scripts\Managers\BuilderManager.cs" />
-    <Compile Include="Assets\Scripts\Managers\EntitySpawner.cs" />
     <Compile Include="Assets\Scripts\Managers\GoalManager.cs" />
+    <Compile Include="Assets\Scripts\Managers\GroupManager.cs" />
     <Compile Include="Assets\Scripts\Managers\HotSpotManager.cs" />
     <Compile Include="Assets\Scripts\Managers\PatrolManager.cs" />
+    <Compile Include="Assets\Scripts\Managers\SpawnManager.cs" />
     <Compile Include="Assets\Scripts\PatrolRoute.cs" />
     <Compile Include="Assets\Scripts\SpawnArea.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>E:/Facultate/Licenta/Licenta/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>

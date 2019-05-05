@@ -5,8 +5,12 @@ using UnityEngine.AI;
 
 public class KinematicEntity : MonoBehaviour
 {
+    private delegate void UpdateHandler();
+
     [SerializeField]
     private Utilities.Jobs AgentJob;
+    private int GroupId;
+    private bool SystemReady;
 
     [SerializeField]
     private float PathUpdateTime = 0.5f;
@@ -27,14 +31,12 @@ public class KinematicEntity : MonoBehaviour
 
     private GameObject Target;
     private KinematicEntity TargetKinematic;
-
     private Vector3 TargetVelocity;
     private float TargetRotation;
 
+    private Goal CurrentGoal;
     private Vector3 CurrentTargetPosition;
     private float CurrentTargetOrientation;
-
-    private Goal CurrentGoal;
     private float CurrentInteractionTime;
 
     private NavMeshPath CurrentPath;
@@ -43,10 +45,12 @@ public class KinematicEntity : MonoBehaviour
     private BuilderManager BuilderMaster;
     private BehaviourBuilder AgentBehaviourBuilder;
 
+    private UpdateHandler AgentUpdate;
+
     IEnumerator AgentStartSleep()
     {
         enabled = false;
-        yield return new WaitUntil(() => GoalManager.IsReady() == true);
+        yield return new WaitUntil(() => GoalMaster.IsReady() == true);
         enabled = true;
     }
 
@@ -66,6 +70,16 @@ public class KinematicEntity : MonoBehaviour
         this.MaxSpeed = maxSpeed;
         this.MaxRotation = maxRotation;
         this.Target = target;
+    }
+
+    public void SetNewGroup(int newGroup)
+    {
+        this.GroupId = newGroup;
+    }
+
+    public void SetNewGoal(Goal newGoal)
+    {
+        this.CurrentGoal = newGoal;
     }
 
     //Does not make use of object interaction
@@ -89,7 +103,7 @@ public class KinematicEntity : MonoBehaviour
             {
                 CurrentInteractionTime += Time.deltaTime;
 
-                if (CurrentInteractionTime > CurrentGoal.InteractionTime)
+                if (CurrentInteractionTime > CurrentGoal.GoalActionTime)
                 {
                     CurrentGoal.UpdatePatrolTarget();
                 }
@@ -112,12 +126,10 @@ public class KinematicEntity : MonoBehaviour
 
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
-            steeringType = AgentBehaviourBuilder.walkingSteering(5f, 5f, cornerArray, new List<GameObject>());
+            steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
         }
 
     }
-
-
     //Makes use of object interaction
     public void InteractionGoal()
     {
@@ -129,8 +141,10 @@ public class KinematicEntity : MonoBehaviour
 
         CurrentTime += Time.deltaTime;
 
-        if (distance < 0.5f)
+        if (distance < 2f)
         {
+            NavAgent.isStopped = true;
+
             if (steeringType != null)
             {
                 steeringType = null;
@@ -140,7 +154,7 @@ public class KinematicEntity : MonoBehaviour
             {
                 CurrentInteractionTime += Time.deltaTime;
 
-                if (CurrentInteractionTime > CurrentGoal.InteractionTime)
+                if (CurrentInteractionTime > CurrentGoal.GoalActionTime)
                 {
                     Debug.Log("Finished");
                     CurrentGoal = null;
@@ -165,13 +179,39 @@ public class KinematicEntity : MonoBehaviour
 
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
-            steeringType = AgentBehaviourBuilder.walkingSteering( 5f, 5f, cornerArray, new List<GameObject>());
+            steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
         }
     }
 
-    
+    public void WaitGoal()
+    {
 
-    void AgentSetBuilderType()
+        CurrentTime += Time.deltaTime;
+
+        if(CurrentTime > CurrentGoal.GoalActionTime)
+        {
+            Debug.Log("Finished");
+            CurrentGoal = null;
+        }
+    }
+
+    public void SetAgentType(Utilities.Jobs jobType,int groupId)
+    {
+        this.AgentJob = jobType;
+        this.GroupId = groupId;
+
+    }
+
+
+
+    void SetAgentUpdateType()
+    {
+        if (this.AgentJob == Utilities.Jobs.GroupMember)
+            this.AgentUpdate = GroupAgentUpdate;
+        else
+            this.AgentUpdate = IndividualAgentUpdate;
+    }
+    void SetAgentBuilderType()
     {
         BuilderMaster = BuilderManager.GetInstance();
 
@@ -181,6 +221,9 @@ public class KinematicEntity : MonoBehaviour
                 AgentBehaviourBuilder = BuilderMaster.GetCivilianBuilder();
                 break;
             case Utilities.Jobs.Patrolman:
+                AgentBehaviourBuilder = BuilderMaster.GetCivilianBuilder();
+                break;
+            case Utilities.Jobs.GroupMember:
                 AgentBehaviourBuilder = BuilderMaster.GetCivilianBuilder();
                 break;
             default:
@@ -202,7 +245,6 @@ public class KinematicEntity : MonoBehaviour
             TargetRotation = 0;
         }
     }
-
     void UpdateSteering()
     {
         if (steering.linearSpeed == Vector3.zero)
@@ -247,29 +289,36 @@ public class KinematicEntity : MonoBehaviour
 
     }
 
+    //Currently only restaring the interaction time;
+    void RestartAgentGoal()
+    {
+        CurrentTime = 0;
+    }
+
     void Start()
     {
         velocity = Vector3.zero;
         rotation = 0f;
-        AgentJob = Utilities.Jobs.Patrolman;
-
-        RobotAnimator = this.GetComponent<Animator>();
-        NavAgent = this.GetComponent<NavMeshAgent>();
-
-        GoalMaster = GoalManager.GetInstance();
-
         CurrentPath = new NavMeshPath();
         TargetKinematic = null;
 
-        AgentSetBuilderType();
+        RobotAnimator = this.GetComponent<Animator>();
+        NavAgent = this.GetComponent<NavMeshAgent>();
+        GoalMaster = GoalManager.GetInstance();
 
 
+        SetAgentBuilderType();
+        SetAgentUpdateType();
         AgentStartSleep();
-
 
     }
 
     void Update()
+    {
+        AgentUpdate();
+    }
+
+    void GroupAgentUpdate()
     {
         if (CurrentGoal != null)
         {
@@ -286,10 +335,36 @@ public class KinematicEntity : MonoBehaviour
         }
         else
         {
-            Debug.Log("Request");
-            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob);
+            Debug.Log("Group Request");
+            RestartAgentGoal();
+            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob, GroupId);
+
+        }
 
 
+
+    }
+
+    void IndividualAgentUpdate()
+    {
+        if (CurrentGoal != null)
+        {
+            CurrentGoal.GoalFunction();
+            if (steeringType != null)
+            {
+                IsKinematicTarget();
+
+                steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
+                    rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
+                    TargetRotation);
+                UpdateSteering();
+            }
+        }
+        else
+        {
+            Debug.Log("Individual Request");
+            RestartAgentGoal();
+            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob,GroupId);
         }
 
     }

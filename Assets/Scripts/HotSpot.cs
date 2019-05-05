@@ -5,20 +5,12 @@ using UnityEngine;
 public class HotSpot : MonoBehaviour
 {
     [SerializeField]
-    [Range(0,4)]
-    private int MaxQueue = 1;
+    [Range(0, 7)]
+    private int MaxQueue;
 
-    void Start()
+    public int GetMaxQueue()
     {
-        StartCoroutine(HotSpotSleep());
+        return MaxQueue;
     }
-
-    IEnumerator HotSpotSleep()
-    {
-        yield return new WaitUntil(() => HotSpotManager.GetInstance().IsReady() == true);
-        HotSpotManager.GetInstance().AddHotSpot(this.name, MaxQueue);
-
-    }
-
 
 }

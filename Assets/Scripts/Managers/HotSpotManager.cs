@@ -36,12 +36,18 @@ public class HotSpotManager : MonoBehaviour
     void Start()
     {
         GoalMaster = GoalManager.GetInstance();
-    }
+
+        HotSpot hotspotComponent;
+
+        List<GameObject> HotSpots = GameObject.FindGameObjectsWithTag("HotSpot").ToList<GameObject>();
+        for(int i = 0; i < HotSpots.Count; ++i)
+        {
+            hotspotComponent = HotSpots[i].GetComponent<HotSpot>();
+
+            this.AddHotSpot(HotSpots[i].name, hotspotComponent.GetMaxQueue());
+        }
 
 
-    public bool IsReady()
-    {
-        return GoalMaster != null;
     }
 
 
@@ -53,6 +59,16 @@ public class HotSpotManager : MonoBehaviour
 
         return hotspot;
     }
+
+    public GameObject getRandomHotSpot(int numOfSpots)
+    {
+        string HotSpotId = HotspotAvailability.GetRandomResource(numOfSpots);
+
+        GameObject hotspot = GameObject.Find(HotSpotId);
+
+        return hotspot;
+    }
+
 
 
     public void AddHotSpot(string hotspotID, int numOfSpots)
