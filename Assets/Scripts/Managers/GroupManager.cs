@@ -67,8 +67,6 @@ public class GroupManager : MonoBehaviour
             CurrentAgents[entry.Key] = 0;
             GroupActions[entry.Key] = Utilities.Actions.Nothing;
         }
-
-        GoalMaster.SetGroupFlagOn();
     }
 
     void Awake()

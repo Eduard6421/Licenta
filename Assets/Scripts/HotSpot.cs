@@ -6,7 +6,7 @@ public class HotSpot : MonoBehaviour
 {
     [SerializeField]
     [Range(0, 7)]
-    private int MaxQueue;
+    private int MaxQueue = 0;
 
     public int GetMaxQueue()
     {

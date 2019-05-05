@@ -47,7 +47,6 @@ public class HotSpotManager : MonoBehaviour
             this.AddHotSpot(HotSpots[i].name, hotspotComponent.GetMaxQueue());
         }
 
-
     }
 
 
@@ -67,6 +66,11 @@ public class HotSpotManager : MonoBehaviour
         GameObject hotspot = GameObject.Find(HotSpotId);
 
         return hotspot;
+    }
+
+    public void UpdateHotSpot(string hotspotID, int numOfSpots)
+    {
+        HotspotAvailability.UpdateResource(hotspotID, numOfSpots);
     }
 
 

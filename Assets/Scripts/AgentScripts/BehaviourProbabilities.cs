@@ -16,7 +16,7 @@ public static class BehaviourProbabilities
     private static float patrolProbability;
 
     private static List<Utilities.Jobs> jobList = new List<Utilities.Jobs> { Utilities.Jobs.Civilian, Utilities.Jobs.Patrolman, Utilities.Jobs.GroupMember };
-    private static List<float> probabilities = new List<float> { 0f, 0f, 1f };
+    private static List<float> probabilities = new List<float> { 0.5f, 0f, 1f };
 
 
     public static void StopGroupDistributon()
@@ -54,8 +54,8 @@ public static class BehaviourProbabilities
         {
             case Utilities.Jobs.Civilian:
 
-                interactProbability = 1f;
-                moveProbability = 0f;
+                interactProbability = 0f;
+                moveProbability = 1f;
                 exitProbability = 0f;
 
                 random = Random.Range(0, 1f);

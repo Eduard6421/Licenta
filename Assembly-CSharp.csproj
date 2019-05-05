@@ -64,6 +64,7 @@
     <Compile Include="Assets\Locomotion Setup\Scripts\JoystickToEvents.cs" />
     <Compile Include="Assets\Locomotion Setup\Scripts\LocomotionPlayer.cs" />
     <Compile Include="Assets\MenuScript.cs" />
+    <Compile Include="Assets\PlaneScript.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\BehaviourProbabilities.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\Goal.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\GroupStatus.cs" />

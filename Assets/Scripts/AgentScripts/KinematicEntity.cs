@@ -82,6 +82,45 @@ public class KinematicEntity : MonoBehaviour
         this.CurrentGoal = newGoal;
     }
 
+
+    //Does not make use of object interaction
+    public void MoveGoal()
+    {
+        float distance;
+        Vector3 targetPosition = CurrentGoal.GetCurrentTargetPosition();
+
+        distance = (targetPosition - transform.position).magnitude;
+
+        CurrentTime += Time.deltaTime;
+
+        if (distance < 0.5f)
+        {
+            Debug.Log("Finished");
+            CurrentGoal = null;
+            steeringType = null;
+        }
+        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
+        {
+            NavMeshHit hit;
+            NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
+
+            CurrentTime = 0;
+
+            targetPosition = hit.position;
+
+            NavAgent.CalculatePath(targetPosition, CurrentPath);
+            NavAgent.SetPath(CurrentPath);
+
+            CurrentTargetPosition = targetPosition;
+            CurrentTargetOrientation = 0;
+
+            List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
+
+            steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
+        }
+
+    }
+
     //Does not make use of object interaction
     public void PatrolGoal()
     {
@@ -141,10 +180,8 @@ public class KinematicEntity : MonoBehaviour
 
         CurrentTime += Time.deltaTime;
 
-        if (distance < 2f)
+        if (distance < 2f && velocity.magnitude < 0.2)
         {
-            NavAgent.isStopped = true;
-
             if (steeringType != null)
             {
                 steeringType = null;
@@ -181,16 +218,17 @@ public class KinematicEntity : MonoBehaviour
 
             steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
         }
+
     }
 
     public void WaitGoal()
     {
 
         CurrentTime += Time.deltaTime;
+        steeringType = null;
 
-        if(CurrentTime > CurrentGoal.GoalActionTime)
+        if (CurrentTime > CurrentGoal.GoalActionTime)
         {
-            Debug.Log("Finished");
             CurrentGoal = null;
         }
     }
@@ -255,6 +293,12 @@ public class KinematicEntity : MonoBehaviour
         else
         {
             velocity += steering.linearSpeed;
+
+            if(velocity.magnitude > MaxSpeed)
+            {
+                velocity.Normalize();
+                velocity *= MaxSpeed ;
+            }
             //Debug.Log(NavAgent.desiredVelocity);
             steeringType.setRVOVelocity(NavAgent.desiredVelocity);
 
@@ -292,7 +336,18 @@ public class KinematicEntity : MonoBehaviour
     //Currently only restaring the interaction time;
     void RestartAgentGoal()
     {
+        steeringType = null;
+        velocity = Vector3.zero;
+        rotation = 0;
         CurrentTime = 0;
+
+        TargetVelocity = Vector3.zero;
+        TargetRotation = 0f;
+
+        RobotAnimator.SetFloat("speed",velocity.magnitude);
+        RobotAnimator.SetFloat("rotation",rotation);
+
+
     }
 
     void Start()
@@ -305,7 +360,8 @@ public class KinematicEntity : MonoBehaviour
         RobotAnimator = this.GetComponent<Animator>();
         NavAgent = this.GetComponent<NavMeshAgent>();
         GoalMaster = GoalManager.GetInstance();
-
+        MaxSpeed = 5;
+        MaxRotation = 5;
 
         SetAgentBuilderType();
         SetAgentUpdateType();
@@ -330,14 +386,14 @@ public class KinematicEntity : MonoBehaviour
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
                     rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
                     TargetRotation);
-                UpdateSteering();
+                    UpdateSteering();
             }
         }
         else
         {
             Debug.Log("Group Request");
             RestartAgentGoal();
-            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob, GroupId);
+            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob, GroupId, Target);
 
         }
 
@@ -357,14 +413,14 @@ public class KinematicEntity : MonoBehaviour
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
                     rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
                     TargetRotation);
-                UpdateSteering();
+                    UpdateSteering();
             }
         }
         else
         {
             Debug.Log("Individual Request");
+            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob,GroupId, Target);
             RestartAgentGoal();
-            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob,GroupId);
         }
 
     }

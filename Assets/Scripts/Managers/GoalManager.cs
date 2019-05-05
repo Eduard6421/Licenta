@@ -14,7 +14,8 @@ public class GoalManager : MonoBehaviour
 
     private bool HotspotsReady = false;
 
-    private bool GroupsReady = false;
+    private Vector3 LeftBound;
+    private Vector3 RightBound;
 
     public static GoalManager GetInstance()
     {
@@ -40,10 +41,12 @@ public class GoalManager : MonoBehaviour
         HotspotManagerInstance = HotSpotManager.GetInstance();
         PatrolManagerInstance = PatrolManager.GetInstance();
         GroupManagerInstance = GroupManager.GetInstance();
+        PlaneScript planeScript = (PlaneScript) GameObject.FindObjectOfType(typeof(PlaneScript));
+        planeScript.GetBounds(out LeftBound,out RightBound);
     }
 
 
-    public Goal RequestBehaviour(GameObject agent, Utilities.Jobs agentJob, int groupID)
+    public Goal RequestBehaviour(GameObject agent, Utilities.Jobs agentJob, int groupID, GameObject Target)
     {
 
         Goal newGoal;
@@ -52,12 +55,15 @@ public class GoalManager : MonoBehaviour
         List<GameObject> groupMembers;
         KinematicEntity memberKinematic;
 
-
         if (agentJob == Utilities.Jobs.GroupMember)
         {
 
             actionType = GroupManagerInstance.GetCurrentGroupAction(groupID);
 
+            if(Target != null)
+            {
+                HotspotManagerInstance.UpdateHotSpot(Target.name,GroupManagerInstance.GetGroupSize(groupID));
+            }
             // The group is doing nothing currently
 
             switch (actionType)
@@ -83,7 +89,7 @@ public class GoalManager : MonoBehaviour
                                 newGoal = new Goal(goalActionTime: 3f, targetPositions: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
                                 //Set the new action of the group
 
-                                GroupManagerInstance.SetGroupAction(groupID, Utilities.Actions.Interact, newGoal);
+                                GroupManagerInstance.SetGroupAction(groupID, Utilities.Actions.Nothing, newGoal);
 
                                 groupMembers = GroupManagerInstance.GetGroupAgents(groupID);
 
@@ -114,6 +120,7 @@ public class GoalManager : MonoBehaviour
                         newGoal = new Goal(goalFunction: newHandler, goalActionTime: 100f, targetPositions: null, interactionObject: null);
                         return newGoal;
                     }
+
                 default:
                     return null;
             }
@@ -121,6 +128,11 @@ public class GoalManager : MonoBehaviour
         else
         {
             actionType = BehaviourProbabilities.GetBehaviourType(agentJob);
+
+            if (Target != null)
+            {
+                HotspotManagerInstance.UpdateHotSpot(Target.name, 1);
+            }
 
             switch (actionType)
             {
@@ -137,7 +149,7 @@ public class GoalManager : MonoBehaviour
                     newGoal = new Goal(goalFunction: newHandler, goalActionTime: 3f, targetPositions: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
                     return newGoal;
 
-
+                        
                 case Utilities.Actions.Patrol:
 
                     List<Vector3> patrolRoute = PatrolManagerInstance.GetPatrolRoute();
@@ -153,12 +165,18 @@ public class GoalManager : MonoBehaviour
 
                 case Utilities.Actions.Move:
 
-                    break;
+                    Vector3 targetPosition = new Vector3();
+                    targetPosition.x = Random.Range(LeftBound.x, RightBound.x);
+                    targetPosition.z = Random.Range(LeftBound.z, RightBound.z);
 
+                    newHandler = agent.GetComponent<KinematicEntity>().MoveGoal;
+
+                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 3f, targetPositions: new List<Vector3> { targetPosition }, interactionObject: null);
+                    return newGoal;
+
+                default:
+                    throw new System.Exception("Invalid goal requested");
             }
-
-            return null;
-
         }
 
     }
@@ -173,16 +191,9 @@ public class GoalManager : MonoBehaviour
     {
         HotspotsReady = true;
     }
-
-    public void SetGroupFlagOn()
-    {
-        GroupsReady = true;
-    }
-
-
     public bool IsReady()
     {
-        return HotspotsReady && GroupsReady;
+        return HotspotsReady;
     }
 
 
