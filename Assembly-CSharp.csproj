@@ -66,6 +66,7 @@
     <Compile Include="Assets\MenuScript.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\BehaviourProbabilities.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\Goal.cs" />
+    <Compile Include="Assets\Scripts\AgentScripts\GroupStatus.cs" />
     <Compile Include="Assets\Scripts\AgentScripts\KinematicEntity.cs" />
     <Compile Include="Assets\Scripts\Behaviours\AlignBehaviour.cs" />
     <Compile Include="Assets\Scripts\Behaviours\AlignOppositeBehaviour.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Assets\Scripts\Builders\AgentSteeringBuilder.cs" />
     <Compile Include="Assets\Scripts\Builders\BehaviourFactory.cs" />
     <Compile Include="Assets\Scripts\Builders\CivilianBuilder.cs" />
+    <Compile Include="Assets\Scripts\GroupTarget.cs" />
     <Compile Include="Assets\Scripts\HotSpot.cs" />
     <Compile Include="Assets\Scripts\Managers\BuilderManager.cs" />
     <Compile Include="Assets\Scripts\Managers\GoalManager.cs" />

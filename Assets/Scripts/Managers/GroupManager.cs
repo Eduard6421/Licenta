@@ -7,41 +7,69 @@ public class GroupManager : MonoBehaviour
 {
     private static GroupManager instance;
 
+    private GoalManager GoalMaster;
+
     private int CurrentGroup;
 
+
     [SerializeField]
-    private int MaxGroupNumber;
+    private int MaxGroupNumber = 1;
     private int GroupNumber;
 
     [SerializeField]
-    private int MaxGroupMembers;
+    private int MaxGroupMembers = 2;
+    private Dictionary<int,List<GameObject>> AgentGroups;
+
+    private Dictionary<int,int> CurrentAgents;
+    private Dictionary<int, Utilities.Actions> GroupActions;
+
     private List<int> MembersToCreate;
-    private SortedList<int,List<GameObject>> AgentGroups;
 
     public static GroupManager GetInstance()
     {
         return instance;    
     }
 
-
-    public int GetNextGroup(GameObject agent)
+    void ReformGroups()
     {
-        int groupIndex;
+        HashSet<int> deletedGroups = new HashSet<int>();
 
-        if (this.CurrentGroup == MembersToCreate.Count - 1)
+        for (int i = 0; i < GroupNumber; ++i)
         {
-            BehaviourProbabilities.StopGroupDistributon();
+            if (AgentGroups[i].Count == 1)
+            {
+                for (int j = 0; j < GroupNumber; ++j)
+                {
+                    if (i != j && !deletedGroups.Contains(j) && AgentGroups[i].Count < MaxGroupMembers)
+                    {
+                        GameObject agent = AgentGroups[i][0];
+                        agent.GetComponent<KinematicEntity>().SetNewGroup(j);
+                        AgentGroups[j].Add(agent);
+                        deletedGroups.Add(i);
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < GroupNumber; ++i)
+        {
+            if (deletedGroups.Contains(i))
+            {
+                AgentGroups.Remove(i);
+            }
         }
 
-        groupIndex = MembersToCreate[this.CurrentGroup];
-        AgentGroups[this.CurrentGroup].Add(agent);
+        // Set each dictionary to the number of members in a group and 
+        // Save how many current agents finished their temporary task
 
-        this.CurrentGroup++;
+        foreach (KeyValuePair<int, List<GameObject>> entry in AgentGroups)
+        {
+            CurrentAgents[entry.Key] = 0;
+            GroupActions[entry.Key] = Utilities.Actions.Nothing;
+        }
 
-        return groupIndex;
-
+        GoalMaster.SetGroupFlagOn();
     }
-
 
     void Awake()
     {
@@ -56,14 +84,22 @@ public class GroupManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        AgentGroups = new SortedList<int, List<GameObject>>();
+        AgentGroups = new Dictionary<int, List<GameObject>>();
+        CurrentAgents = new Dictionary<int, int>();
+        GroupActions = new Dictionary<int, Utilities.Actions>();
+        MembersToCreate = new List<int>();
     }
 
+    void Start()
+    {
+        GoalMaster = GoalManager.GetInstance();
+    }
 
-    void CreateGroupDistribution() {
+    public void CreateGroupDistribution()
+    {
 
         CurrentGroup = 0;
-        GroupNumber = Random.Range(0, MaxGroupNumber);
+        GroupNumber = Random.Range(1, MaxGroupNumber);
 
         for (int i = 0; i < GroupNumber; ++i)
         {
@@ -74,41 +110,73 @@ public class GroupManager : MonoBehaviour
             {
                 MembersToCreate.Add(i);
             }
-
         }
 
         MembersToCreate = Utilities.FisherYatesSuffle<int>(MembersToCreate);
+        ReformGroups();
     }
 
-    public void ReformGroups()
+    public void SetGroupAction(int groupID, Utilities.Actions groupAction, Goal groupGoal)
     {
-        HashSet<int> deletedGroups = new HashSet<int>();
+        GroupActions[groupID] = groupAction;
+        CurrentAgents[groupID] = 0;
+    }
+    
+    public int GetNextGroup(GameObject agent)
+    {
+        int groupIndex;
 
-        for (int i = 0; i < GroupNumber; ++i)
+        if (MembersToCreate.Count > 0)
         {
-            if(AgentGroups[i].Count == 1)
+            if (this.CurrentGroup == MembersToCreate.Count - 1)
             {
-                for(int j = 0; j < GroupNumber; ++j)
-                {
-                    if(i != j && !deletedGroups.Contains(j) && AgentGroups[i].Count < MaxGroupMembers)
-                    {
-                        GameObject agent = AgentGroups[i][0];
-                        agent.GetComponent<KinematicEntity>().SetNewGroup(j);
-                        AgentGroups[j].Add(agent);
-                        deletedGroups.Add(i);
-                        break;
-                    }
-                }
+                BehaviourProbabilities.StopGroupDistributon();
             }
+
+            groupIndex = MembersToCreate[this.CurrentGroup];
+            AgentGroups[groupIndex].Add(agent);
+
+            this.CurrentGroup++;
+
+            return groupIndex;
         }
-        for(int i = 0; i < GroupNumber; ++i)
+
+        BehaviourProbabilities.StopGroupDistributon();
+        return -1;
+
+    }
+
+    public int GetGroupSize(int groupID)
+    {
+        return AgentGroups[groupID].Count;
+    }
+
+    public Utilities.Actions GetCurrentGroupAction(int groupID)
+    {
+        if (GroupActions[groupID] == Utilities.Actions.Nothing)
         {
-            if(deletedGroups.Contains(i))
-            {
-                AgentGroups.Remove(i);
-            }
+            return GroupActions[groupID];
+        }
+        if (CurrentAgents[groupID] < AgentGroups[groupID].Count)
+        {
+            ++CurrentAgents[groupID];
+            return Utilities.Actions.Wait;
+        }
+        else
+        {
+            CurrentAgents[groupID] = 0;
+            return Utilities.Actions.Nothing;
         }
     }
+
+    public List<GameObject> GetGroupAgents(int groupID)
+    {
+        return AgentGroups[groupID];
+    }
+
+
+
+
 
 
 }

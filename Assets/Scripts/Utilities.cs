@@ -15,6 +15,10 @@ public static class Utilities
         Civilian=1,Patrolman,GroupMember
     };
 
+    public enum Actions
+    {
+        Nothing=1, Interact, Move, Patrol, Wait, Exit,
+    };
 
     public static float MapToInterval(float value, float left, float right, float toLeft, float toRight)
     {
@@ -206,22 +210,28 @@ public static class Utilities
 
         public string GetRandomResource(int numOfSpots)
         {
-            List<int> availableSpotsPosition = new List<int>();
+            List<int> availableSpotsPositions = new List<int>();
             
             for(int i = 0; i < AvailableResources.Keys.Count; ++i)
             {
                 int currentCount;
                 AvailableResources.TryGetValue(AvailableResources.Keys[i], out currentCount);
+
+                if(currentCount >= numOfSpots)
+                {
+                    availableSpotsPositions.Add(i);
+                }
+
                 
             }
-            if(availableSpotsPosition.Count == 0)
+            if(availableSpotsPositions.Count == 0)
             {
                 return "";
             }
 
-            int randomElement = Random.Range(0, availableSpotsPosition.Count - 1);
+            int randomElement = Random.Range(0, availableSpotsPositions.Count - 1);
 
-            string ResourceName = AvailableResources.Keys[availableSpotsPosition[randomElement]];
+            string ResourceName = AvailableResources.Keys[availableSpotsPositions[randomElement]];
             DecreaseResource(ResourceName, numOfSpots);
             return ResourceName;
 

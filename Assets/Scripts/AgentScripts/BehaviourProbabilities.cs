@@ -40,13 +40,13 @@ public static class BehaviourProbabilities
             }
         }
 
-        return jobList[jobList.Count];
+        return jobList[0];
 
     }
 
 
 
-    public static string GetBehaviourType(Utilities.Jobs AgentType)
+    public static Utilities.Actions GetBehaviourType(Utilities.Jobs AgentType)
     {
         float random;
 
@@ -56,40 +56,48 @@ public static class BehaviourProbabilities
 
                 interactProbability = 1f;
                 moveProbability = 0f;
-                meetProbabilty = 0f;
                 exitProbability = 0f;
 
                 random = Random.Range(0, 1f);
 
                 if (random <= interactProbability)
-                    return "Interact";
+                    return Utilities.Actions.Interact;
                 if (random <= moveProbability)
-                    return "Move";
-                if (random <= meetProbabilty)
-                    return "Meet";
-                return "Exit";
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
 
 
             case Utilities.Jobs.Patrolman:
                 interactProbability = 0.0f;
                 patrolProbability = 1f;
+                exitProbability = 0f;
 
                 random = Random.Range(0, 1f);
 
                 if (random <= interactProbability)
-                    return "Interact";
+                    return Utilities.Actions.Interact;
                 if (random <= patrolProbability)
-                    return "Patrol";
+                    return Utilities.Actions.Patrol;
                 if (random <= moveProbability)
-                    return "Move";
-                if (random <= meetProbabilty)
-                    return "Meet";
-                return "Exit";
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
+            case Utilities.Jobs.GroupMember:
+                interactProbability = 1f;
+                moveProbability = 0;
+                exitProbability = 0f;
+
+                random = Random.Range(0, 1f);
+
+                if (random <= interactProbability)
+                    return Utilities.Actions.Interact;
+                if (random <= moveProbability)
+                    return Utilities.Actions.Move;
+                return Utilities.Actions.Exit;
 
             default:
-                return "Exit";
+                return Utilities.Actions.Exit;
         }
 
     }

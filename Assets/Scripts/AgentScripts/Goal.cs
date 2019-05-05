@@ -16,14 +16,47 @@ public class Goal
     private bool RightFlow;
     private int CurrentTargetIndex;
 
-    public Goal(GoalHandler goalFunction, float goalActionTime, List<Vector3> targetPosition, List<GameObject> interactionObject)
+
+    public Goal()
+    {
+        this.GoalFunction = null;
+        this.GoalActionTime = 0;
+        this.InteractionObjects = null;
+        this.TargetPositions = null;
+        this.CurrentTargetIndex = 0;
+        this.RightFlow = true;
+    }
+
+    public Goal(float goalActionTime, List<Vector3> targetPositions, List<GameObject> interactionObject)
+    {
+        this.GoalFunction = null;
+        this.GoalActionTime = goalActionTime;
+        this.InteractionObjects = interactionObject;
+        this.TargetPositions = targetPositions;
+        this.CurrentTargetIndex = 0;
+        this.RightFlow = true;
+    }
+
+
+    public Goal(GoalHandler goalFunction, float goalActionTime, List<Vector3> targetPositions, List<GameObject> interactionObject)
     {
         this.GoalFunction = goalFunction;
         this.GoalActionTime = goalActionTime;
         this.InteractionObjects = interactionObject;
-        this.TargetPositions = targetPosition;
+        this.TargetPositions = targetPositions;
         this.CurrentTargetIndex = 0;
         this.RightFlow = true;
+    }
+
+
+    public Goal(Goal otherGoal, GoalHandler goalFunction)
+    {
+        this.GoalFunction = goalFunction;
+        this.GoalActionTime = otherGoal.GoalActionTime;
+        this.InteractionObjects = otherGoal.InteractionObjects;
+        this.TargetPositions = otherGoal.TargetPositions;
+        this.CurrentTargetIndex = otherGoal.CurrentTargetIndex;
+        this.RightFlow = otherGoal.RightFlow;
     }
 
 

@@ -9,10 +9,12 @@ public class GoalManager : MonoBehaviour
     private List<GameObject> Agents;
 
     private HotSpotManager HotspotManagerInstance;
-
     private PatrolManager PatrolManagerInstance;
+    private GroupManager GroupManagerInstance;
 
-    private static bool HotspotsReady = false;
+    private bool HotspotsReady = false;
+
+    private bool GroupsReady = false;
 
     public static GoalManager GetInstance()
     {
@@ -37,6 +39,7 @@ public class GoalManager : MonoBehaviour
     {
         HotspotManagerInstance = HotSpotManager.GetInstance();
         PatrolManagerInstance = PatrolManager.GetInstance();
+        GroupManagerInstance = GroupManager.GetInstance();
     }
 
 
@@ -45,56 +48,111 @@ public class GoalManager : MonoBehaviour
 
         Goal newGoal;
         GoalHandler newHandler;
+        Utilities.Actions actionType;
+        List<GameObject> groupMembers;
+        KinematicEntity memberKinematic;
+
 
         if (agentJob == Utilities.Jobs.GroupMember)
         {
 
+            actionType = GroupManagerInstance.GetCurrentGroupAction(groupID);
 
-            return null;
+            // The group is doing nothing currently
+
+            switch (actionType)
+            {
+
+                case Utilities.Actions.Nothing:
+                    {
+                        actionType = BehaviourProbabilities.GetBehaviourType(agentJob);
+                        switch (actionType)
+                        {
+
+                            case Utilities.Actions.Interact:
+
+                                int groupSize = GroupManagerInstance.GetGroupSize(groupID);
+
+                                GameObject hotspot = HotspotManagerInstance.getRandomHotSpot(groupSize);
+                                if (hotspot == null)
+                                {
+                                    goto case Utilities.Actions.Move;
+                                }
 
 
+                                newGoal = new Goal(goalActionTime: 3f, targetPositions: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
+                                //Set the new action of the group
+
+                                GroupManagerInstance.SetGroupAction(groupID, Utilities.Actions.Interact, newGoal);
+
+                                groupMembers = GroupManagerInstance.GetGroupAgents(groupID);
+
+                                for(int i = 0; i < groupMembers.Count; ++i)
+                                {
+                                    memberKinematic = groupMembers[i].GetComponent<KinematicEntity>();
+                                    GoalHandler tmpHandler = memberKinematic.InteractionGoal;
+                                    Goal tmpGoal = new Goal(newGoal,tmpHandler);
+                                    groupMembers[i].GetComponent<KinematicEntity>().SetNewGoal(tmpGoal);
+                                }
+
+                                newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
+
+                                newGoal = new Goal(newGoal,goalFunction: newHandler);
+                                return newGoal;
+
+                            case Utilities.Actions.Move:
+                                return null;
+
+                            default:
+                                return null;
+                        }
+                    }
+                case Utilities.Actions.Wait:
+                    {
+                        newHandler = agent.GetComponent<KinematicEntity>().WaitGoal;
+
+                        newGoal = new Goal(goalFunction: newHandler, goalActionTime: 100f, targetPositions: null, interactionObject: null);
+                        return newGoal;
+                    }
+                default:
+                    return null;
+            }
         }
         else
         {
+            actionType = BehaviourProbabilities.GetBehaviourType(agentJob);
 
-            string behaviourType = BehaviourProbabilities.GetBehaviourType(agentJob);
-
-            switch (behaviourType)
+            switch (actionType)
             {
-                case "Interact":
+                case Utilities.Actions.Interact:
 
                     GameObject hotspot = HotspotManagerInstance.getRandomHotSpot();
                     if (hotspot == null)
                     {
-                        goto case "Move";
+                        goto case Utilities.Actions.Move;
                     }
 
                     newHandler = agent.GetComponent<KinematicEntity>().InteractionGoal;
 
-                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 3f, targetPosition: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
+                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 3f, targetPositions: new List<Vector3> { hotspot.transform.position }, interactionObject: new List<GameObject> { hotspot });
                     return newGoal;
 
 
-                case "Patrol":
+                case Utilities.Actions.Patrol:
 
                     List<Vector3> patrolRoute = PatrolManagerInstance.GetPatrolRoute();
                     if (patrolRoute == null)
                     {
-                        goto case "Move";
+                        goto case Utilities.Actions.Move;
                     }
 
                     newHandler = agent.GetComponent<KinematicEntity>().PatrolGoal;
 
-                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 0.5f, targetPosition: patrolRoute, interactionObject: null);
+                    newGoal = new Goal(goalFunction: newHandler, goalActionTime: 0.5f, targetPositions: patrolRoute, interactionObject: null);
                     return newGoal;
 
-                case "Move":
+                case Utilities.Actions.Move:
 
-
-
-                    break;
-
-                case "Meet":
                     break;
 
             }
@@ -116,11 +174,17 @@ public class GoalManager : MonoBehaviour
         HotspotsReady = true;
     }
 
-    public static bool IsReady()
+    public void SetGroupFlagOn()
     {
-        Debug.Log("fuck yeah" + HotspotsReady);
-        return HotspotsReady;
+        GroupsReady = true;
     }
+
+
+    public bool IsReady()
+    {
+        return HotspotsReady && GroupsReady;
+    }
+
 
     
    

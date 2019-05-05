@@ -17,7 +17,6 @@ public class SpawnArea : MonoBehaviour
         Color spawnColor = Color.red;
         spawnColor.a = Utilities.MapToInterval(spawnDensity,1,50,0.1f,0.75f);
         Gizmos.color = spawnColor;
-
         Gizmos.DrawSphere(transform.position, spawnRange);
     }
 

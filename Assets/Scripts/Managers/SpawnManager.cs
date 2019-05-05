@@ -11,8 +11,8 @@ public class SpawnManager : MonoBehaviour
     private List<GameObject> Agents;
     private SpawnArea SpawnScript;
 
-    private GoalManager BehaviourMaster;
-    private GroupManager GroupMaster;
+    private GoalManager GoalManagerInstance;
+    private GroupManager GroupManagerInstance;
 
     private int AgentCount = 1;
 
@@ -34,6 +34,16 @@ public class SpawnManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    void Start()
+    {
+        GoalManagerInstance = GoalManager.GetInstance();
+        GroupManagerInstance = GroupManager.GetInstance();
+        GroupManagerInstance.CreateGroupDistribution();
+        SpawnStartSleep();
+        SpawnAgents();
+
+    }
+
     void AssignAgentJob(GameObject newAgent)
     {
         Utilities.Jobs agentJob = BehaviourProbabilities.GetAgentType();
@@ -42,29 +52,29 @@ public class SpawnManager : MonoBehaviour
         switch (agentJob)
         {
             case Utilities.Jobs.GroupMember:
-                groupNumber = GroupMaster.GetNextGroup(newAgent);
+                groupNumber = GroupManagerInstance.GetNextGroup(newAgent);
+                if(groupNumber == -1)
+                        agentJob = BehaviourProbabilities.GetAgentType();
                 break;
             default:
                 groupNumber = -1;
                 break;
         }
-
         NewAgent.GetComponent<KinematicEntity>().SetAgentType(agentJob,groupNumber);
     }
 
+    IEnumerator SpawnStartSleep()
+    {
+        yield return new WaitUntil(() => GoalManagerInstance.IsReady() == true);
+    }
 
-
-    void Start()
+    void SpawnAgents()
     {
         float newX;
         float newZ;
         float newMaxZ;
 
-       AgentPrefab = Resources.Load("RobotPrefab", typeof(GameObject)) as GameObject;
-
-        BehaviourMaster = GoalManager.GetInstance();
-        GroupMaster = GroupManager.GetInstance();
-
+        AgentPrefab = Resources.Load("RobotPrefab", typeof(GameObject)) as GameObject;
         Agents = new List<GameObject>();
 
         SpawnPoints = new List<GameObject>(GameObject.FindGameObjectsWithTag("Spawn"));
@@ -93,7 +103,5 @@ public class SpawnManager : MonoBehaviour
             }
 
         }
-
-        GroupMaster.ReformGroups();
     }
 }
