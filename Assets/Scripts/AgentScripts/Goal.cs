@@ -62,6 +62,9 @@ public class Goal
 
     public GameObject GetCurrentTargetObject()
     {
+        if (InteractionObjects.Count == 0)
+            return null;
+
         return InteractionObjects[CurrentTargetIndex];
     }
 
@@ -70,23 +73,48 @@ public class Goal
         return TargetPositions[CurrentTargetIndex];
     }
 
-
-    public bool UpdateSequentialTarget()
+    public bool IsEnded()
     {
-        if(this.TargetPositions.Count > 0)
-        {
-            return false;
-        }
+        return this.CurrentTargetIndex == this.TargetPositions.Count;
+    }
 
-        if (this.CurrentTargetIndex < this.TargetPositions.Count - 1)
+    public List<Vector3> GetCornerArray()
+    {
+        return this.TargetPositions;
+    }
+
+
+    public bool UpdateSequentialTargetObject()
+    {
+        if(TargetPositions.Count == 1)
         {
-            CurrentTargetIndex++;
             return true;
         }
 
+        CurrentTargetIndex++;
+
+        if (this.CurrentTargetIndex >= this.TargetPositions.Count - 1)
+        {
+            return true;
+        }
 
         return false;
     }
+
+
+    public bool UpdateSequentialTarget()
+    {
+
+        CurrentTargetIndex++;
+
+        if (this.CurrentTargetIndex == this.TargetPositions.Count - 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public void UpdatePatrolTarget()
     {
         if(this.CurrentTargetIndex == this.TargetPositions.Count - 1)

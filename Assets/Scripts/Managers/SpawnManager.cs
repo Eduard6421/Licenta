@@ -13,6 +13,7 @@ public class SpawnManager : MonoBehaviour
 
     private GoalManager GoalManagerInstance;
     private GroupManager GroupManagerInstance;
+    private ReportScript reportScriptInstance;
 
     private int AgentCount = 1;
 
@@ -38,12 +39,17 @@ public class SpawnManager : MonoBehaviour
     {
         GoalManagerInstance = GoalManager.GetInstance();
         GroupManagerInstance = GroupManager.GetInstance();
+        reportScriptInstance = ReportScript.GetInstance();
         GroupManagerInstance.CreateGroupDistribution();
         SpawnStartSleep();
         SpawnAgents();
 
     }
 
+    /// <summary>
+    /// Assigns a job to the agent
+    /// </summary>
+    /// <param name="newAgent"></param>
     void AssignAgentJob(GameObject newAgent)
     {
         Utilities.Jobs agentJob = BehaviourProbabilities.GetAgentType();
@@ -63,11 +69,19 @@ public class SpawnManager : MonoBehaviour
         NewAgent.GetComponent<KinematicEntity>().SetAgentType(agentJob,groupNumber);
     }
 
+    /// <summary>
+    /// Puts spawner on hold until goal manager is ready
+    /// </summary>
+    /// <returns></returns>
     IEnumerator SpawnStartSleep()
     {
         yield return new WaitUntil(() => GoalManagerInstance.IsReady() == true);
     }
 
+
+    /// <summary>
+    /// Spawn the agents from all the spawnpoints
+    /// </summary>
     void SpawnAgents()
     {
         float newX;
@@ -98,10 +112,15 @@ public class SpawnManager : MonoBehaviour
                 NewAgent.name = "Agent" + AgentCount;
                 NewAgent.tag = "Agent";
 
+                Agents.Add(NewAgent);
+
                 AssignAgentJob(NewAgent);
                 AgentCount++;
             }
 
         }
+
+        GoalManagerInstance.AssignAgentsList(Agents);
+        reportScriptInstance.SetAgentsNumber(Agents.Count);
     }
 }

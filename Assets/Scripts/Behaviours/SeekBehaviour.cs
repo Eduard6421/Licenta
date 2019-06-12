@@ -11,13 +11,15 @@ public class SeekBehaviour : CharacterBehaviour {
 
     public override SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput steering = new SteeringOutput();
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
-        steering.linearSpeed = targetPosition - characterPosition;
-        steering.linearSpeed.Normalize();
-        steering.linearSpeed = steering.linearSpeed * MaxAcceleration;
-       
-        return steering;
+        newSteering.linearAcceleration = targetPosition - characterPosition;
+        newSteering.linearAcceleration.Normalize();
+
+        newSteering.linearAcceleration = newSteering.linearAcceleration * MaxAcceleration;
+
+        return newSteering;
     }
 
 }

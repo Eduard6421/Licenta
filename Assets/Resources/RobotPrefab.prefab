@@ -1657,10 +1657,12 @@ GameObject:
   - component: {fileID: 5462944100721786800}
   - component: {fileID: 5462944100721786801}
   - component: {fileID: 8267415858928399740}
+  - component: {fileID: 3132851749787243910}
   - component: {fileID: 5115751431283369435}
+  - component: {fileID: 3950693700540958727}
   m_Layer: 0
   m_Name: RobotPrefab
-  m_TagString: Untagged
+  m_TagString: Agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1712,8 +1714,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c49621cbe0e8a48bf630ed32781cf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AgentJob: 0
   PathUpdateTime: 0.5
-  AgentJob: Civillian
+  TrailMaterial: {fileID: 2100000, guid: 695c6abf56b3e764b938d30f2a18c770, type: 2}
+--- !u!114 &3132851749787243910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722460035560031590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790d8c5a745a905498f148fb84d37ff0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateTime: 0.1
+  agentSightRadius: 35.7
+  agentSightAngle: 50
 --- !u!195 &5115751431283369435
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1725,7 +1743,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 4
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -1736,3 +1754,17 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!136 &3950693700540958727
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722460035560031590}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  m_Radius: 0.5
+  m_Height: 1.9
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.96, z: 0}

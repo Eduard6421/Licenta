@@ -4,29 +4,29 @@ using UnityEngine;
 
 public class SteeringOutput  {
 
-    public Vector3 linearSpeed { get; set; }
-    public float angularSpeed { get; set; }
+    public Vector3 linearAcceleration { get; set; }
+    public float angularAcceleration { get; set; }
 
     public SteeringOutput()
     {
-        linearSpeed = Vector3.zero;
-        angularSpeed = 0f;
+        linearAcceleration = Vector3.zero;
+        angularAcceleration = 0f;
     }
 
-    public SteeringOutput(float angularSpeed)
+    public SteeringOutput(float angularAcceleration)
     {
-        this.angularSpeed = angularSpeed;
+        this.angularAcceleration = angularAcceleration;
     }
 
-    public SteeringOutput(Vector3 linearSpeed)
+    public SteeringOutput(Vector3 linearAcceleration)
     {
-        this.linearSpeed = linearSpeed;
+        this.linearAcceleration = linearAcceleration;
     }
 
-    public SteeringOutput(Vector3 linearSpeed, float angularSpeed)
+    public SteeringOutput(Vector3 linearAcceleration, float angularAcceleration)
     {
-        this.linearSpeed = linearSpeed;
-        this.angularSpeed = angularSpeed;
+        this.linearAcceleration = linearAcceleration;
+        this.angularAcceleration = angularAcceleration;
     }
 
 }

@@ -12,11 +12,13 @@ public abstract class CharacterBehaviour : ISteerable
     protected float SlowRadius { get; set; }
     protected float TargetRadius { get; set; }
     protected float TimeToTarget { get; set; }
+    protected SteeringOutput newSteering { get; set; }
 
 
     protected CharacterBehaviour(float maxAcceleration)
     {
         this.MaxAcceleration = maxAcceleration;
+        this.newSteering = new SteeringOutput();
     }
 
     protected CharacterBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget)
@@ -28,6 +30,7 @@ public abstract class CharacterBehaviour : ISteerable
         this.SlowRadius = slowRadius;
         this.TargetRadius = targetRadius;
         this.TimeToTarget = timeToTarget;
+        this.newSteering = new SteeringOutput();
 
     }
 

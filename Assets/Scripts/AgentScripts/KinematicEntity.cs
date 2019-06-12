@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Profiling;
 
 public class KinematicEntity : MonoBehaviour
 {
@@ -13,17 +15,24 @@ public class KinematicEntity : MonoBehaviour
     private bool SystemReady;
 
     [SerializeField]
-    private float PathUpdateTime = 0.5f;
+    private float PathUpdateTime = 1f;
     private float CurrentTime = 0f;
+
+    [SerializeField]
+    private Material TrailMaterial;
 
     private NavMeshAgent NavAgent;
     private Animator RobotAnimator;
+    private EmergencyLocator ExitLocator;
+    private TrailRenderer AgentTrail;
+    private GameObject TrailObject;
 
     private BlendedSteeringBehaviour steeringType;
     private SteeringOutput steering;
     private SteeringOutput oldSteering;
 
     private float MaxSpeed;
+    private float MaxUncapSpeed;
     private float MaxRotation;
 
     private Vector3 velocity;
@@ -38,11 +47,13 @@ public class KinematicEntity : MonoBehaviour
     private Vector3 CurrentTargetPosition;
     private float CurrentTargetOrientation;
     private float CurrentInteractionTime;
+    private bool lastTarget = false;
 
     private NavMeshPath CurrentPath;
 
     private GoalManager GoalMaster;
     private BuilderManager BuilderMaster;
+    private ReportScript ReportScript;
     private BehaviourBuilder AgentBehaviourBuilder;
 
     private UpdateHandler AgentUpdate;
@@ -68,6 +79,7 @@ public class KinematicEntity : MonoBehaviour
     {
         this.steeringType = newBehaviour;
         this.MaxSpeed = maxSpeed;
+        this.MaxUncapSpeed = maxSpeed;
         this.MaxRotation = maxRotation;
         this.Target = target;
     }
@@ -80,7 +92,24 @@ public class KinematicEntity : MonoBehaviour
     public void SetNewGoal(Goal newGoal)
     {
         this.CurrentGoal = newGoal;
+        steeringType = null;
     }
+
+    public void CapSpeed()
+    {
+        this.MaxSpeed = 0.5f;
+
+    }
+
+
+    public void UncapSpeed()
+    {
+        if(MaxSpeed < MaxUncapSpeed)
+        {
+            this.MaxSpeed += 0.1f;
+        }
+    }
+
 
 
     //Does not make use of object interaction
@@ -95,32 +124,44 @@ public class KinematicEntity : MonoBehaviour
 
         if (distance < 0.5f)
         {
-            Debug.Log("Finished");
-            CurrentGoal = null;
-            steeringType = null;
+            if (steeringType == null)
+            {
+                steeringType = null;
+                CurrentInteractionTime = 0;
+                NavAgent.avoidancePriority = 40;
+            }
+            else
+            {
+                CurrentInteractionTime += Time.deltaTime;
+                NavAgent.avoidancePriority = 40;
+
+                if (CurrentInteractionTime > CurrentGoal.GoalActionTime)
+                {
+                    CurrentGoal = null;
+                }
+
+            }
         }
-        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
+        else if (steeringType == null || CurrentTime > PathUpdateTime)
         {
             NavMeshHit hit;
             NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
-
             CurrentTime = 0;
 
+            //Debug.Log("Target position" + targetPosition);
             targetPosition = hit.position;
 
             NavAgent.CalculatePath(targetPosition, CurrentPath);
             NavAgent.SetPath(CurrentPath);
-
-            CurrentTargetPosition = targetPosition;
-            CurrentTargetOrientation = 0;
+            NavAgent.avoidancePriority = 50;
 
             List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
 
             steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
+            
         }
-
+        NavAgent.velocity = velocity;
     }
-
     //Does not make use of object interaction
     public void PatrolGoal()
     {
@@ -137,6 +178,7 @@ public class KinematicEntity : MonoBehaviour
             {
                 steeringType = null;
                 CurrentInteractionTime = 0;
+                NavAgent.avoidancePriority = 40;
             }
             else
             {
@@ -148,7 +190,7 @@ public class KinematicEntity : MonoBehaviour
                 }
             }
         }
-        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
+        else if (steeringType == null || CurrentTime > PathUpdateTime)
         {
             NavMeshHit hit;
             NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
@@ -159,6 +201,7 @@ public class KinematicEntity : MonoBehaviour
 
             NavAgent.CalculatePath(targetPosition, CurrentPath);
             NavAgent.SetPath(CurrentPath);
+            NavAgent.avoidancePriority = 50;
 
             CurrentTargetPosition = targetPosition;
             CurrentTargetOrientation = 0;
@@ -167,6 +210,7 @@ public class KinematicEntity : MonoBehaviour
 
             steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
         }
+        NavAgent.velocity = velocity;
 
     }
     //Makes use of object interaction
@@ -180,25 +224,18 @@ public class KinematicEntity : MonoBehaviour
 
         CurrentTime += Time.deltaTime;
 
-        if (distance < 2f && velocity.magnitude < 0.2)
+        if (distance < 1.2f)
         {
-            if (steeringType != null)
-            {
-                steeringType = null;
-                CurrentInteractionTime = 0;
-            }
-            else
-            {
-                CurrentInteractionTime += Time.deltaTime;
 
+                CurrentInteractionTime += Time.deltaTime;
+                NavAgent.avoidancePriority = 40;
                 if (CurrentInteractionTime > CurrentGoal.GoalActionTime)
                 {
-                    Debug.Log("Finished");
                     CurrentGoal = null;
                 }
-            }
+            //gameObject.transform.LookAt(targetPosition);
         }
-        else if (steeringType == null || CurrentTargetPosition != targetPosition || CurrentTime > PathUpdateTime)
+        else if (steeringType == null || CurrentTime > PathUpdateTime)
         {
             NavMeshHit hit;
             NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
@@ -210,6 +247,8 @@ public class KinematicEntity : MonoBehaviour
 
             NavAgent.CalculatePath(targetPosition, CurrentPath);
             NavAgent.SetPath(CurrentPath);
+            NavAgent.avoidancePriority = 50;
+
 
             CurrentTargetPosition = targetPosition;
             CurrentTargetOrientation = 0;
@@ -218,9 +257,9 @@ public class KinematicEntity : MonoBehaviour
 
             steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
         }
-
+        NavAgent.velocity = velocity;
     }
-
+    //Makes agents wait for a specified time period
     public void WaitGoal()
     {
 
@@ -229,14 +268,103 @@ public class KinematicEntity : MonoBehaviour
 
         if (CurrentTime > CurrentGoal.GoalActionTime)
         {
+            NavAgent.avoidancePriority = 0;
             CurrentGoal = null;
         }
     }
 
-    public void SetAgentType(Utilities.Jobs jobType,int groupId)
+    public void ExitGoal()
+    {
+
+        float distance;
+        MaxSpeed = 5;
+        MaxRotation = 5;
+        MaxUncapSpeed = 5;
+
+        Vector3 targetPosition = Vector3.zero;
+
+        try
+        {
+            targetPosition = CurrentGoal.GetCurrentTargetPosition();
+        }
+        catch(Exception e)
+        {
+            targetPosition = CurrentGoal.GetCurrentTargetPosition();
+        }
+        GameObject targetObject = CurrentGoal.GetCurrentTargetObject();
+
+
+        distance = (targetPosition - transform.position).magnitude;
+
+        CurrentTime += Time.deltaTime;
+
+        if (distance <5f && targetObject != null)
+        {
+            steeringType = null;
+            if (targetObject != null)
+            {
+                if(lastTarget)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                {
+                    lastTarget = CurrentGoal.UpdateSequentialTargetObject();
+                }
+            }
+            else
+            {
+                GoalMaster.UpdateEmergency(this.gameObject);
+            }
+        }
+        else if (steeringType == null || CurrentTime > PathUpdateTime)
+        {
+            CurrentTime = 0;
+
+            NavAgent.CalculatePath(targetPosition, CurrentPath);
+            NavAgent.SetPath(CurrentPath);
+            NavAgent.avoidancePriority = 50;
+
+            List<Vector3> cornerArray = new List<Vector3>(CurrentPath.corners);
+
+            steeringType = AgentBehaviourBuilder.walkingSteering(cornerArray, new List<GameObject>());
+
+        }
+        NavAgent.velocity = velocity;
+
+    }
+
+    public void SetAgentType(Utilities.Jobs jobType, int groupId)
     {
         this.AgentJob = jobType;
         this.GroupId = groupId;
+
+    }
+
+    public void ToggleTrailRendering()
+    {
+        TrailObject = new GameObject();
+        TrailObject.transform.position = this.transform.position;
+        TrailObject.transform.parent = this.transform;
+        TrailObject.tag = "Trail";
+        TrailObject.name = "Trail" + this.name.Substring(5);
+
+        AgentTrail = TrailObject.AddComponent<TrailRenderer>();
+        AgentTrail.time = 100000;
+        AgentTrail.widthMultiplier = 0.2f;
+        AgentTrail.material = TrailMaterial;
+    }
+
+
+    private void OnDestroy()
+    {
+        if (TrailObject != null)
+        {
+            TrailObject.transform.parent = null;
+            AgentTrail.autodestruct = true;
+        }
+
+        ReportScript.ReportDeletedAgent();
 
     }
 
@@ -285,49 +413,40 @@ public class KinematicEntity : MonoBehaviour
     }
     void UpdateSteering()
     {
-        if (steering.linearSpeed == Vector3.zero)
+        if (steering.linearAcceleration == Vector3.zero)
         {
             velocity = Vector3.zero;
             RobotAnimator.SetFloat("speed", 0);
         }
         else
         {
-            velocity += steering.linearSpeed;
+            velocity += steering.linearAcceleration;
 
-            if(velocity.magnitude > MaxSpeed)
+            if (velocity.magnitude > MaxSpeed)
             {
                 velocity.Normalize();
-                velocity *= MaxSpeed ;
+                velocity *= MaxSpeed;
             }
-            //Debug.Log(NavAgent.desiredVelocity);
+
             steeringType.setRVOVelocity(NavAgent.desiredVelocity);
 
             RobotAnimator.SetFloat("speed", NavAgent.velocity.magnitude);
 
         }
 
-        if (steering.angularSpeed == 0)
+        if (steering.angularAcceleration == 0)
         {
             rotation = 0;
             RobotAnimator.SetFloat("rotation", 0);
         }
         else
         {
-            rotation += steering.angularSpeed;
 
             if (rotation > MaxRotation)
             {
                 rotation = Mathf.Abs(rotation) / rotation * MaxRotation;
             }
-            NavAgent.angularSpeed += rotation;
-
-            if (NavAgent.angularSpeed > MaxRotation)
-            {
-                NavAgent.angularSpeed = Mathf.Abs(NavAgent.angularSpeed) / NavAgent.angularSpeed * MaxRotation;
-            }
-
-
-            RobotAnimator.SetFloat("rotation", NavAgent.angularSpeed);
+            //RobotAnimator.SetFloat("rotation", NavAgent.angularSpeed);
         }
 
 
@@ -340,18 +459,21 @@ public class KinematicEntity : MonoBehaviour
         velocity = Vector3.zero;
         rotation = 0;
         CurrentTime = 0;
+        CurrentInteractionTime = 0;
 
         TargetVelocity = Vector3.zero;
         TargetRotation = 0f;
+        lastTarget = false;
 
-        RobotAnimator.SetFloat("speed",velocity.magnitude);
-        RobotAnimator.SetFloat("rotation",rotation);
+        RobotAnimator.SetFloat("speed", velocity.magnitude);
+        RobotAnimator.SetFloat("rotation", rotation);
 
 
     }
 
     void Start()
     {
+        steering = new SteeringOutput();
         velocity = Vector3.zero;
         rotation = 0f;
         CurrentPath = new NavMeshPath();
@@ -359,9 +481,12 @@ public class KinematicEntity : MonoBehaviour
 
         RobotAnimator = this.GetComponent<Animator>();
         NavAgent = this.GetComponent<NavMeshAgent>();
+
         GoalMaster = GoalManager.GetInstance();
-        MaxSpeed = 5;
-        MaxRotation = 5;
+        ReportScript = ReportScript.GetInstance();
+        MaxSpeed = 2;
+        MaxRotation = 2;
+        MaxUncapSpeed = 2;
 
         SetAgentBuilderType();
         SetAgentUpdateType();
@@ -386,19 +511,16 @@ public class KinematicEntity : MonoBehaviour
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
                     rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
                     TargetRotation);
-                    UpdateSteering();
+                UpdateSteering();
             }
         }
         else
         {
-            Debug.Log("Group Request");
+            //Debug.Log("Group Request");
             RestartAgentGoal();
             CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob, GroupId, Target);
 
         }
-
-
-
     }
 
     void IndividualAgentUpdate()
@@ -413,16 +535,17 @@ public class KinematicEntity : MonoBehaviour
                 steering = steeringType.GetSteering(this.transform.position, this.transform.eulerAngles.y, velocity,
                     rotation, CurrentTargetPosition, CurrentTargetOrientation, TargetVelocity,
                     TargetRotation);
-                    UpdateSteering();
+                UpdateSteering();
             }
         }
         else
         {
-            Debug.Log("Individual Request");
-            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob,GroupId, Target);
+            //Debug.Log("Individual Request");
+            CurrentGoal = GoalMaster.RequestBehaviour(this.gameObject, AgentJob, GroupId, Target);
             RestartAgentGoal();
         }
 
     }
+
 
 }

@@ -11,9 +11,9 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: 
+  - name: Interior
     cost: 1
-  - name: 
+  - name: Exterior
     cost: 1
   - name: 
     cost: 1

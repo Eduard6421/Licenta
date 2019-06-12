@@ -11,24 +11,28 @@ public class SeparationBehaviour : ISteerable
     private float DecayCoefficient;
     private float TargetRadius;
 
+    private SteeringOutput newSteering;
+
     public SeparationBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget, List<GameObject> targets, float decayCoefficent) 
     {
         this.Targets = targets;
         this.DecayCoefficient = decayCoefficent;
         this.TargetRadius = targetRadius;
         this.MaxAcceleration = maxAcceleration;
+        this.newSteering = new SteeringOutput();
     }
 
 
     public SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput newSteering = new SteeringOutput();
-
         Vector3 separationDirection;
 
         float distanceToTarget;
         float separationStrength;
 
+
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
         separationStrength = 0;
 
         for (int i = 0; i < Targets.Count; ++i)
@@ -40,10 +44,10 @@ public class SeparationBehaviour : ISteerable
             {
                 separationStrength = Mathf.Min(DecayCoefficient / (distanceToTarget * distanceToTarget), MaxAcceleration);
 
-            }
+            }   
 
             separationDirection.Normalize();
-            newSteering.linearSpeed += separationStrength * separationDirection;
+            newSteering.linearAcceleration += separationStrength * separationDirection;
 
 
         }

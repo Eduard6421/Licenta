@@ -8,14 +8,17 @@ public class PursueBehaviour : ISteerable
     private SeekBehaviour SeekingBehaviour;
     private float MaxPrediction;
     private float MaxAcceleration;
+    private SteeringOutput newSteering;
 
 
     public PursueBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget, float maxPrediction)
     {
 
         MaxAcceleration = maxAcceleration;
-        SeekingBehaviour = new SeekBehaviour(maxAcceleration);
         MaxPrediction = maxPrediction;
+        newSteering = new SteeringOutput();
+        SeekingBehaviour = new SeekBehaviour(maxAcceleration);
+
     }
 
 
@@ -28,6 +31,10 @@ public class PursueBehaviour : ISteerable
         float distance;
         float speedTotal;
         float predictionTime;
+
+
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
         TargetDirection = targetPosition - characterPosition;
         distance = TargetDirection.magnitude;

@@ -13,13 +13,15 @@ public class FleeBehaviour : CharacterBehaviour
 
     public override SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput steering = new SteeringOutput();
 
-        steering.linearSpeed = characterPosition - targetPosition;
-        steering.linearSpeed.Normalize();
-        steering.linearSpeed = steering.linearSpeed * MaxAcceleration;
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
-        return steering;
+        newSteering.linearAcceleration = characterPosition - targetPosition;
+        newSteering.linearAcceleration.Normalize();
+        newSteering.linearAcceleration = newSteering.linearAcceleration * MaxAcceleration;
+
+        return newSteering;
     }
 
 }

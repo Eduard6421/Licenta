@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/secondscene.unity
+    guid: 4b06b9f653484f1448fc70e72b0e72dd
   m_configObjects: {}

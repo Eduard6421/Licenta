@@ -8,17 +8,21 @@ public class ObstacleAvoidanceBehaviour : ISteerable
     private ISteerable SeekBehaviour;
     private float AvoidanceDistance;
     private float LookAhead;
+    private SteeringOutput newSteering;
 
     public ObstacleAvoidanceBehaviour(float maxAcceleration, float avoidDistance, float lookAhead)
     {
         this.AvoidanceDistance = 2;
         this.LookAhead = 3;
+        this.newSteering = new SteeringOutput();
+
         SeekBehaviour = new SeekBehaviour(maxAcceleration);
     }
 
     public SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput newSteering = new SteeringOutput();
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
         RaycastHit hit;
         Vector3 rayVector;

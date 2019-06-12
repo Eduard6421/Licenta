@@ -9,7 +9,7 @@ public class WanderBehaviour : ISteerable
     private float WanderRate;
     private float WanderOrientation;
     private float MaxAcceleration;
-
+    private SteeringOutput newSteering;
     private ISteerable FaceBehaviour;
 
     public WanderBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget, float WanderOffset, float WanderRadius, float WanderRate, float WanderOrientation)
@@ -19,12 +19,7 @@ public class WanderBehaviour : ISteerable
         this.WanderRate = WanderRate;
         this.WanderOrientation = WanderOrientation;
         this.MaxAcceleration = maxAcceleration;
-
-        maxAcceleration = 3f;
-        maxRotation = 5f;
-        slowRadius = 10f;
-        targetRadius = 1f;
-        timeToTarget = 1f;
+        this.newSteering = new SteeringOutput();
 
         FaceBehaviour = new FaceBehaviour(maxAcceleration, maxSpeed, maxAngularAcceleration, maxRotation, slowRadius, targetRadius, timeToTarget);
 
@@ -33,10 +28,12 @@ public class WanderBehaviour : ISteerable
 
     public SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput newSteering = new SteeringOutput();
-
         Vector3 characterDirectionalVector;
         Vector3 targetDirectionalVector;
+
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
+
 
         WanderOrientation = Utilities.randomBinomial() * WanderRate;
 
@@ -52,7 +49,7 @@ public class WanderBehaviour : ISteerable
 
         newSteering = FaceBehaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, targetPosition, targetOrientation, targetVelocity, targetRotation);
 
-        newSteering.linearSpeed = MaxAcceleration * characterDirectionalVector;
+        newSteering.linearAcceleration = MaxAcceleration * characterDirectionalVector;
 
         return newSteering;
 

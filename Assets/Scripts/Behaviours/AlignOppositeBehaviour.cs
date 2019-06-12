@@ -12,7 +12,8 @@ public class AlignOppositeBehaviour : CharacterBehaviour
 
     public override SteeringOutput GetSteering(Vector3 characterPosition,float characterOrientation, Vector3 currentVelocity, float currentRotation,  Vector3 targetPosition,float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput newSteering = new SteeringOutput();
+        newSteering.angularAcceleration = 0;
+        newSteering.linearAcceleration = Vector3.zero;
 
         float rotation;
         float rotationLength;
@@ -40,15 +41,15 @@ public class AlignOppositeBehaviour : CharacterBehaviour
 
         targetRotationSpeed *= rotation / rotationLength;
 
-        newSteering.angularSpeed = targetRotationSpeed - currentRotation;
-        newSteering.angularSpeed /= TimeToTarget;
+        newSteering.angularAcceleration = targetRotationSpeed - currentRotation;
+        newSteering.angularAcceleration /= TimeToTarget;
 
-        angularAcceleration = Mathf.Abs(newSteering.angularSpeed);
+        angularAcceleration = Mathf.Abs(newSteering.angularAcceleration);
 
         if (angularAcceleration > MaxAngularAcceleration)
         {
-            newSteering.angularSpeed /= angularAcceleration;
-            newSteering.angularSpeed *= MaxAngularAcceleration;
+            newSteering.angularAcceleration /= angularAcceleration;
+            newSteering.angularAcceleration *= MaxAngularAcceleration;
         }
 
         return newSteering;

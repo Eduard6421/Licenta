@@ -30,6 +30,10 @@ public class GroupManager : MonoBehaviour
         return instance;    
     }
 
+    /// <summary>
+    /// Check if groups with only 1 members exit
+    /// If Yes then merge them with another group
+    /// </summary>
     void ReformGroups()
     {
         HashSet<int> deletedGroups = new HashSet<int>();
@@ -93,10 +97,20 @@ public class GroupManager : MonoBehaviour
         GoalMaster = GoalManager.GetInstance();
     }
 
+    /// <summary>
+    /// Create a group distribution for the agents
+    /// </summary>
     public void CreateGroupDistribution()
     {
 
         CurrentGroup = 0;
+
+        if(MaxGroupNumber == 0 )
+        {
+            BehaviourProbabilities.StopGroupDistributon();
+            return;
+        }
+
         GroupNumber = Random.Range(1, MaxGroupNumber);
 
         for (int i = 0; i < GroupNumber; ++i)
@@ -120,6 +134,12 @@ public class GroupManager : MonoBehaviour
         CurrentAgents[groupID] = 0;
     }
     
+
+    /// <summary>
+    /// Get next group for the given agent. Saves the agent in the specialised structure
+    /// </summary>
+    /// <param name="agent"> Agent that needs to be assigned</param>
+    /// <returns></returns>
     public int GetNextGroup(GameObject agent)
     {
         int groupIndex;
@@ -143,7 +163,11 @@ public class GroupManager : MonoBehaviour
         return -1;
 
     }
-
+    /// <summary>
+    /// Returns the numbers of a group with ca given groupID
+    /// </summary>
+    /// <param name="groupID"></param>
+    /// <returns></returns>
     public int GetGroupSize(int groupID)
     {
         return AgentGroups[groupID].Count;

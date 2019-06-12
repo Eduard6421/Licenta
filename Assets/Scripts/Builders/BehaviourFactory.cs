@@ -132,9 +132,9 @@ public static class BehaviourFactory
 
             case Utilities.Behaviour.LookAndRun:
 
-                MaxAcceleration = 0.05f;
+                MaxAcceleration = 0.5f;
                 MaxSpeed = 8f;
-                MaxAngularAcceleration = 0.025f;
+                MaxAngularAcceleration = 0.1f;
                 MaxRotation = 1.5f;
                 SlowRadius = 3f;
                 TargetRadius = 1f;
@@ -165,13 +165,13 @@ public static class BehaviourFactory
             case Utilities.Behaviour.PathFollowing:
 
 
-                MaxAcceleration = 0.01f;
-                MaxSpeed = 3f;
-                MaxAngularAcceleration = 0.025f;
+                MaxAcceleration = 0.5f;
+                MaxSpeed = 5f;
+                MaxAngularAcceleration = 0.5f;
                 MaxRotation = 1.5f;
-                SlowRadius = 15f;
-                TargetRadius = 1f;
-                TimeToTarget = 0.5f;
+                SlowRadius = 8f;
+                TargetRadius = 5f;
+                TimeToTarget = 1f;
                 MaxPrediction = 2f;
 
                 steeringType = new PathFollowing(MaxAcceleration, MaxSpeed, MaxAngularAcceleration, MaxRotation, SlowRadius, TargetRadius, TimeToTarget, CharacterPath);
@@ -226,8 +226,8 @@ public static class BehaviourFactory
 
             case Utilities.Behaviour.Wander:
 
-                MaxAcceleration = 0.03f;
-                MaxSpeed = 1.5f;
+                MaxAcceleration = 3f;
+                MaxSpeed = 2f;
                 MaxAngularAcceleration = 0.025f;
                 MaxRotation = 1.5f;
                 SlowRadius = 15f;

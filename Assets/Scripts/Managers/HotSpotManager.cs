@@ -43,8 +43,7 @@ public class HotSpotManager : MonoBehaviour
         for(int i = 0; i < HotSpots.Count; ++i)
         {
             hotspotComponent = HotSpots[i].GetComponent<HotSpot>();
-
-            this.AddHotSpot(HotSpots[i].name, hotspotComponent.GetMaxQueue());
+            AddHotSpot(HotSpots[i].name, hotspotComponent.GetMaxQueue());
         }
 
     }

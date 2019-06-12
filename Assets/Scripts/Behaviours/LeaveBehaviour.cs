@@ -13,7 +13,8 @@ public class LeaveBehaviour : CharacterBehaviour
 
     public override SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
-        SteeringOutput newSteering = new SteeringOutput();
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
         Vector3 DesiredDirection;
         Vector3 DesiredVelocity;
@@ -42,16 +43,16 @@ public class LeaveBehaviour : CharacterBehaviour
         DesiredVelocity.Normalize();
         DesiredVelocity = DesiredVelocity * targetSpeed;
 
-        newSteering.linearSpeed = DesiredVelocity - currentVelocity;
-        newSteering.linearSpeed /= TimeToTarget;
+        newSteering.linearAcceleration = DesiredVelocity - currentVelocity;
+        newSteering.linearAcceleration /= TimeToTarget;
 
-        if (newSteering.linearSpeed.magnitude > MaxAcceleration)
+        if (newSteering.linearAcceleration.magnitude > MaxAcceleration)
         {
-            newSteering.linearSpeed.Normalize();
-            newSteering.linearSpeed *= MaxAcceleration;
+            newSteering.linearAcceleration.Normalize();
+            newSteering.linearAcceleration *= MaxAcceleration;
         }
 
-        newSteering.linearSpeed = newSteering.linearSpeed * targetSpeed;
+        newSteering.linearAcceleration = newSteering.linearAcceleration * targetSpeed;
 
 
         return newSteering;

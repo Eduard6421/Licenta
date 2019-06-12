@@ -10,6 +10,7 @@ public class CollisionAvoidanceBehaviour : ISteerable
     private ISteerable EvadeBehaviour;
     private float MaxAcceleration;
     private float TargetRadius;
+    private SteeringOutput newSteering;
 
     public CollisionAvoidanceBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget, List<GameObject> targets)
     {
@@ -18,6 +19,7 @@ public class CollisionAvoidanceBehaviour : ISteerable
         this.Entities = targets;
         this.TargetRadius = 1.2f;
         this.MaxAcceleration = 2.5f;
+        this.newSteering = new SteeringOutput();
 
         EvadeBehaviour = new EvadeBehaviour(.5f, maxSpeed, maxAngularAcceleration, maxRotation, slowRadius, targetRadius, timeToTarget, maxPrediction);
 
@@ -28,8 +30,8 @@ public class CollisionAvoidanceBehaviour : ISteerable
     {
         //target rotation is not needed
 
-
-        SteeringOutput newSteering = new SteeringOutput();
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
         GameObject firstTarget = null;
 
@@ -115,7 +117,7 @@ public class CollisionAvoidanceBehaviour : ISteerable
 
             relativePosition.Normalize();
 
-            newSteering.linearSpeed = relativePosition * MaxAcceleration;
+            newSteering.linearAcceleration = relativePosition * MaxAcceleration;
 
         }
 

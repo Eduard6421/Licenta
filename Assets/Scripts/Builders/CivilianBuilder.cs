@@ -16,13 +16,18 @@ public class CivilianBuilder : BehaviourBuilder
         ISteerable obstacleAvoidance = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.ObstacleAvoidance,
             maxSpeed, maxRotation, cornerArray, agents);
 
-        WeightedBehaviour path_follow = new WeightedBehaviour(pathFollowing,0.6f);    
-        WeightedBehaviour collision_avoidance  = new WeightedBehaviour(obstacleAvoidance,0.1f);
+        ISteerable wanderBehavour = BehaviourFactory.GetCharacterBehaviour(Utilities.Behaviour.Wander,
+            maxSpeed, maxRotation, cornerArray, agents);
+
+        WeightedBehaviour pathFollow = new WeightedBehaviour(pathFollowing,0.5f);    
+        WeightedBehaviour collisionAvoidance  = new WeightedBehaviour(obstacleAvoidance,0.2f);
+        WeightedBehaviour wanderBehaviour = new WeightedBehaviour(wanderBehavour, 0.3f);
 
         List<WeightedBehaviour> behaviourList = new List<WeightedBehaviour>();
 
-        behaviourList.Add(path_follow);
-        behaviourList.Add(collision_avoidance);
+        behaviourList.Add(pathFollow);
+        behaviourList.Add(collisionAvoidance);
+        behaviourList.Add(wanderBehaviour);
 
 
         return new BlendedSteeringBehaviour(maxSpeed,maxRotation,behaviourList);

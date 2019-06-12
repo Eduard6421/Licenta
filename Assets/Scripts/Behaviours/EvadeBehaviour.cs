@@ -9,12 +9,14 @@ public class EvadeBehaviour : ISteerable
 
     private float MaxPrediction;
     private float MaxAcceleration;
+    private SteeringOutput newSteering;
 
     public EvadeBehaviour(float maxAcceleration, float maxSpeed, float maxAngularAcceleration, float maxRotation, float slowRadius, float targetRadius, float timeToTarget, float maxPrediction) 
     {
 
         this.MaxAcceleration = maxAcceleration;
         this.MaxPrediction   = maxPrediction;
+        this.newSteering = new SteeringOutput();
 
         FleeingBehaviour = new FleeBehaviour(maxAcceleration);
 
@@ -23,6 +25,9 @@ public class EvadeBehaviour : ISteerable
 
     public SteeringOutput GetSteering(Vector3 characterPosition, float characterOrientation, Vector3 currentVelocity, float currentRotation, Vector3 targetPosition, float targetOrientation, Vector3 targetVelocity, float targetRotation)
     {
+
+        newSteering.linearAcceleration = Vector3.zero;
+        newSteering.angularAcceleration = 0;
 
         Vector3 newTargetPosition;
         Vector3 TargetDirection;
