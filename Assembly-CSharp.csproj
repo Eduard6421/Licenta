@@ -111,6 +111,9 @@
     <Compile Include="Assets\Scripts\Utilities\CameraScript.cs" />
     <Compile Include="Assets\Scripts\Utilities\ObjectPlacer.cs" />
     <Compile Include="Assets\Scripts\Utilities\Utilities.cs" />
+    <Compile Include="Assets\ShootingGallery - Enviroment Pack\Miscellaneous\SceneExplorer\FreeFly.cs" />
+    <Compile Include="Assets\tempKinematic.cs" />
+    <None Include="Assets\UMA\InternalDataStore\InGame\Resources\PlaceholderAssets\PlaceholderAssetsREADME.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />
@@ -121,13 +124,16 @@
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\UMA\InternalDataStore\AssetVersion.xml" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\UMA\Whats New in UMA 28.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Sprite.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
+    <None Include="Assets\UMA\Upgrading From Previous Versions.txt" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>E:/Facultate/Licenta/Licenta/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -698,6 +704,28 @@
     <Reference Include="System.Xml.Serialization">
       <HintPath>E:/Developer Software/Unity/Editor/Data/NetStandard/compat/2.0.0/shims/netfx/System.Xml.Serialization.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="UMA_Core.csproj">
+      <Project>{34700EB4-0E37-CBCE-4024-4E7CA905DBAA}</Project>
+      <Name>UMA_Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="UMA_Examples.csproj">
+      <Project>{B291AF6A-055F-D548-9A69-A9378AB5B283}</Project>
+      <Name>UMA_Examples</Name>
+    </ProjectReference>
+    <ProjectReference Include="UMA_Content.csproj">
+      <Project>{CCCA5B95-2087-70DF-620A-763C1A359DD9}</Project>
+      <Name>UMA_Content</Name>
+    </ProjectReference>
+    <ProjectReference Include="UMA_Core_Editor.csproj">
+      <Project>{537009CE-2092-ECE4-7D72-656E4D8A724F}</Project>
+      <Name>UMA_Core_Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="UMA_Examples_Editor.csproj">
+      <Project>{29E5735A-2F75-0E08-27D5-0FE61F019033}</Project>
+      <Name>UMA_Examples_Editor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

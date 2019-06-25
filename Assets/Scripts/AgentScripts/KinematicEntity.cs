@@ -145,7 +145,7 @@ public class KinematicEntity : MonoBehaviour
         else if (steeringType == null || CurrentTime > PathUpdateTime)
         {
             NavMeshHit hit;
-            NavMesh.SamplePosition(targetPosition, out hit, 3f, NavMesh.AllAreas);
+            NavMesh.SamplePosition(targetPosition, out hit, Mathf.Infinity, NavMesh.AllAreas);
             CurrentTime = 0;
 
             //Debug.Log("Target position" + targetPosition);

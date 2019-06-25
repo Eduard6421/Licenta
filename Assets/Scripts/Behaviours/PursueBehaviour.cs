@@ -19,6 +19,8 @@ public class PursueBehaviour : ISteerable
         newSteering = new SteeringOutput();
         SeekingBehaviour = new SeekBehaviour(maxAcceleration);
 
+        MaxPrediction = 2f;
+
     }
 
 
@@ -50,6 +52,8 @@ public class PursueBehaviour : ISteerable
             predictionTime = distance / speedTotal;
         }
 
+
+        Debug.Log(targetVelocity);
         newTargetPosition = targetPosition + targetVelocity * predictionTime;
 
         return SeekingBehaviour.GetSteering(characterPosition, characterOrientation, currentVelocity, currentRotation, newTargetPosition, targetOrientation, targetVelocity, targetRotation);

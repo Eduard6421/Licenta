@@ -178,6 +178,22 @@ public static class BehaviourFactory
                 break;
 
 
+            case Utilities.Behaviour.Seek:
+
+                MaxAcceleration = 0.5f;
+                MaxSpeed = 8f;
+                MaxAngularAcceleration = 0.1f;
+                MaxRotation = 1.5f;
+                SlowRadius = 3f;
+                TargetRadius = 1f;
+                TimeToTarget = 0.5f;
+                MaxPrediction = 2f;
+                steeringType = new SeekBehaviour(MaxAcceleration);
+                break;
+
+
+
+
             case Utilities.Behaviour.Separation:
 
                 MaxAcceleration = 0.05f;

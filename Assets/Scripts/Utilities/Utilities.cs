@@ -7,7 +7,7 @@ public static class Utilities
 
     public enum Behaviour
     {
-        Align = 1, AlignOpposite, Arrive, Blended, CollisionAvoidance, Evade, Face, Leave, LookAndRun, ObstacleAvoidance, PathFollowing, Pursue, Separation, VelocityMatch, Wander,
+        Align = 1, AlignOpposite, Arrive, Blended, CollisionAvoidance, Evade, Face, Leave, LookAndRun, ObstacleAvoidance, PathFollowing, Pursue, Seek, Separation, VelocityMatch, Wander,
     };
 
     public enum Jobs
